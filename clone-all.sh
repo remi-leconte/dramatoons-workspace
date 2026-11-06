@@ -8,7 +8,7 @@ clone() {
     if [ -d "$2" ]; then
         echo "$2 : déjà présent"
     else
-        git clone "git@github.com:remi-leconte/$1.git" "$2"
+        git clone "https://github.com/remi-leconte/$1.git" "$2"
     fi
 }
 
