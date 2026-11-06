@@ -6,6 +6,7 @@ description: Workflow git et GitHub de Dramatoons (Release-Driven) - branches fe
 # Workflow GitHub de Dramatoons (Release-Driven)
 
 ## Ce que Claude peut faire
+- **Ne jamais commiter de lui-même**, dans aucun dépôt (y compris `dramatoons-workspace`) : après toute modification de fichier, laisser les changements non commités et attendre que l'utilisateur les ait relus et demande le commit.
 - Travailler uniquement sur les branches de ticket (`<technical label>/...` et `hotfix/...`) : les créer, y commiter, les pousser, ouvrir une PR.
 - Ne jamais commiter, fusionner ni pousser sur `main` ou une branche `release/*`, sauf demande explicite de l'utilisateur. Côté GitHub, un ruleset protège `main` et `release/*` (api et front) : pas de push direct, pas de force push, pas de suppression, fusion uniquement par PR (0 approbation requise).
 - Créer les tickets à la demande de l'utilisateur et remplir leurs champs Release et Technical label.

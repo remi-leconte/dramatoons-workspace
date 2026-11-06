@@ -19,7 +19,10 @@
 ### utilisateur - profil
 1. Un utilisateur, quel que soit son rôle, peut modifier son login, son email et son mot de passe. Après un changement de login, il est déconnecté et doit se reconnecter.
 2. Un utilisateur peut supprimer son compte. Ses suivis (webtoonUser) sont supprimés avec lui.
-3. Les webtoons qu'il a créés ne sont pas supprimés : ils sont attribués au compte « Utilisateur supprimé » (créé à l'installation par `app:create-deleted-user`).
+3. Les webtoons qu'il a créés :
+   - dépubliés et suivis par personne, ou uniquement par lui (voir webtoons.md, webtoon - base : règle 3) : ils sont supprimés ;
+   - publiés, ou dépubliés mais suivis par au moins une autre personne : ils sont attribués au compte « Utilisateur supprimé » (créé à l'installation par `app:create-deleted-user`).
+4. Le compte « Utilisateur supprimé » ne peut pas être supprimé.
 
 ### utilisateur - administration
 1. Seuls les administrateurs ont accès à l'administration des utilisateurs (les modérateurs n'y ont pas accès).
