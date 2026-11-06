@@ -20,7 +20,7 @@ description: Workflow git et GitHub de Dramatoons (Release-Driven) - branches fe
 - Numéro de version : `vX.Y.Z`. Une release s'appelle `vX.Y.0` (exemple : `v2.4.0`) ; un hotfix incrémente le dernier chiffre (exemple : `v2.3.1`).
 - L'API et le front ont toujours la même version `X.Y`. Si l'un des deux doit avancer sans l'autre, on saute une version pour les réaligner.
 - Les extensions ne suivent pas encore ce workflow (elles n'ont que `main`).
-- Le dépôt espace de travail (`dramatoons-workspace`, la racine) ne suit pas ce workflow : il n'a qu'une branche `main`, sur laquelle on commite directement.
+- Le dépôt espace de travail (`dramatoons-workspace`, la racine) ne suit pas ce workflow : il n'a qu'une branche `main`, sur laquelle on commite directement. Il ne nécessite pas de ticket : Claude peut y commiter et pousser sans ticket associé.
 - Environnements : local, staging (`api-staging.dramatoons.ovh`) et production.
 
 ## Branches
@@ -44,6 +44,8 @@ Format, inspiré de la convention *Conventional Commits* :
 - `<résumé>` : en français, au présent, sans majuscule initiale ni point final, 72 caractères maximum. Il décrit ce que fait le commit.
 - Exemples : `fix(#117): corrige la recherche du catalogue`, `feature(#97): ajoute les titres secondaires`.
 - Un commit = un changement cohérent. Ne pas mélanger deux sujets dans un même commit.
+- Dans le dépôt espace de travail (`dramatoons-workspace`), les commits n'ont pas de ticket : seulement `<résumé>`, avec les mêmes règles d'écriture.
+- Pas de ligne `Co-Authored-By` ni d'autre signature dans les commits.
 
 ## Pull requests
 - Titre : `#<id> <titre du ticket>`.
