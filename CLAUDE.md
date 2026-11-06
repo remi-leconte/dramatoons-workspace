@@ -7,7 +7,9 @@ Site de suivi de lecture de webtoons (BD en ligne). Prod : `dramatoons.ovh`, API
 - `front/` : Vue 3 + TypeScript, en Docker également.
 - `ext-ch/` et `ext-ff/` : extensions navigateur Chromium et Firefox (publiée sous le nom `dramatoons-highlighter`). Elles utilisent `GET /webtoons?mode=ext`.
 
-La racine est le dépôt `remi-leconte/dramatoons-workspace` : il ne contient que ce qui est commun (`CLAUDE.md`, `.claude/skills/`, `clone-all.sh`). Les 4 dossiers ci-dessus sont des dépôts git indépendants (`dramatoons-api`, `dramatoons-front`, `dramatoons-extension-chromium`, `dramatoons-extension-firefox`), ignorés par le dépôt racine : un changement de code se commite dans le dépôt du dossier concerné, pas à la racine. `clone-all.sh` les clone au bon endroit sur un nouveau poste.
+La racine est le dépôt `remi-leconte/dramatoons-workspace` : il ne contient que ce qui est commun (`CLAUDE.md`, `.claude/skills/`, `clone-all.sh`). Les 4 dossiers ci-dessus sont des dépôts git indépendants (`dramatoons-api`, `dramatoons-front`, `dramatoons-extension-chromium`, `dramatoons-extension-firefox`), ignorés par le dépôt racine : un changement de code se commite dans le dépôt du dossier concerné, pas à la racine. `clone-all.sh` les clone au bon endroit sur un nouveau poste. Le dépôt racine n'a qu'une branche `main`, sur laquelle on commite directement : il ne suit pas le workflow des 4 autres dépôts.
+
+**Workflow git/GitHub** (branches, PR, statuts des tickets, releases, hotfix, déploiement) : charger le skill `workflow-github` avant toute action git ou GitHub dans un des 4 dépôts.
 
 En dev : le front répond sur `http://localhost:5173`, l'API sur `http://localhost:8081`. Le réseau Docker externe `global_proxy_network` doit exister.
 
