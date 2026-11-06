@@ -7,9 +7,13 @@ description: Workflow git et GitHub de Dramatoons (Release-Driven) - branches fe
 
 ## Ce que Claude peut faire
 - Travailler uniquement sur les branches de ticket (`<technical label>/...` et `hotfix/...`) : les créer, y commiter, les pousser, ouvrir une PR.
-- Ne jamais commiter, fusionner ni pousser sur `main` ou une branche `release/*`, sauf demande explicite de l'utilisateur.
+- Ne jamais commiter, fusionner ni pousser sur `main` ou une branche `release/*`, sauf demande explicite de l'utilisateur. Côté GitHub, un ruleset protège `main` et `release/*` (api et front) : pas de push direct, pas de force push, pas de suppression, fusion uniquement par PR (0 approbation requise).
+- Créer les tickets à la demande de l'utilisateur et remplir leurs champs Release et Technical label.
+- Faire avancer les statuts des tickets jusqu'à `Ready for Release`. Les statuts suivants (`Recette`, `Ready for Prod`, `Done`) seulement à la demande de l'utilisateur.
+- L'utilisateur relit et fusionne les PR. Une fois la PR fusionnée : passer le ticket en `Ready for Release` et mettre à jour la branche `release/vX.Y.Z` locale (`git pull --ff-only`).
+- Garder les branches de ticket (en local et sur GitHub) jusqu'à la mise en production de la release ; elles peuvent être supprimées ensuite.
 - La mise en recette (staging) et la mise en production sont faites à la main par l'utilisateur, qui valide aussi la recette. Il n'y a pas encore de chaîne CI/CD.
-- Le reste du rôle de Claude (statuts des tickets, fusion des PR…) sera défini au fil de la collaboration : en attendant, demander.
+- Accès GitHub : remotes en HTTPS, authentifiés par `gh` (`gh auth setup-git`). Pas de SSH (la clé a une passphrase).
 
 ## Repères
 - Tableau de bord : projet GitHub **Dramatoons** (n° 4, propriétaire `remi-leconte`), commun aux 4 dépôts `dramatoons-api`, `dramatoons-front`, `dramatoons-extension-chromium` et `dramatoons-extension-firefox`.
@@ -63,7 +67,8 @@ Les numéros de ticket sont propres à chaque dépôt : le ticket #12 du front e
 | l'API et les extensions | `dramatoons-api` | un par extension concernée |
 | une extension seulement | le dépôt de l'extension | aucun |
 
-- Un ticket est créé par défaut dans `dramatoons-front`, puis déplacé dans le bon dépôt s'il ne concerne pas le front.
+- Un ticket est créé par défaut dans `dramatoons-front`, puis déplacé dans le bon dépôt s'il ne concerne pas le front. Quand Claude crée un ticket dont le dépôt est connu (ex. : API seulement), il le crée directement dans ce dépôt.
+- Un ticket créé est ajouté au projet Dramatoons, avec sa Release et son Technical label.
 - Le dépôt du ticket principal travaille avec le ticket principal. Chaque autre dépôt travaille avec son sous-ticket : branche, commits et PR portent le numéro du sous-ticket.
 - Si un champ du sous-ticket est vide (Release, Technical label…), on reprend la valeur du ticket principal.
 - Le ticket principal ne peut pas avoir un statut plus avancé que le moins avancé de ses sous-tickets. Exemple : il ne passe en `Ready for Prod` que lorsque tous ses sous-tickets y sont.
@@ -97,7 +102,7 @@ Noms exacts : `Backlog` → `Tâche en cours` → `Merge Request` → `Ready for
 ## Recette et mise en production d'une release
 1. Mettre à jour le staging avec `release/vX.Y.Z`, puis passer les tickets `Ready for Release` en `Recette`.
 2. Recetter chaque ticket : `Ready for Prod` si c'est bon, `Tâche à corriger` sinon.
-3. Quand **tous** les tickets de la version sont en `Ready for Prod` : fusionner `release/vX.Y.Z` dans `main` et poser le tag `vX.Y.Z` sur `main`.
+3. Quand **tous** les tickets de la version sont en `Ready for Prod` : fusionner `release/vX.Y.Z` dans `main` (par PR, imposé par le ruleset) et poser le tag `vX.Y.Z` sur `main`.
 4. Faire une dernière recette de `main` sur le staging.
 5. Si tout est bon, mettre à jour la production avec `main`, puis passer les tickets en `Done`.
 6. Préparer la version suivante :
