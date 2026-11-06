@@ -1,0 +1,23 @@
+# Dépôts de code : chacun a son propre dépôt git (voir clone-all.sh)
+/api/
+/front/
+/ext-ch/
+/ext-ff/
+
+# Secrets et données locales : jamais versionnés
+secrets.local.txt
+*.local.txt
+sauvegarde*.sql
+*.sql
+
+# Notes de travail locales
+/resume claude
+
+# Réglages Claude Code propres à ce poste
+.claude/settings.local.json
+
+# Éditeur / système
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
