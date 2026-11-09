@@ -13,8 +13,8 @@ La racine est le dépôt `remi-leconte/dramatoons-workspace` : il ne contient qu
 
 **Cycle d'un ticket** (détail dans le skill `workflow-github`) :
 1. on discute du ticket, sans rien créer ;
-2. l'utilisateur valide : Claude crée le ticket, code sans commiter et résume ce qu'il a fait ;
-3. l'utilisateur relit, pose ses questions, demande des modifications (toujours sans commit) ;
+2. l'utilisateur valide : Claude crée le ticket, code sans commiter, fait tester par l'agent `testeur` (corrige et relance jusqu'au verdict `VALIDÉ`), puis résume ce qu'il a fait ;
+3. l'utilisateur relit, pose ses questions, demande des modifications (toujours sans commit, avec un nouveau passage de `testeur`) ;
 4. « je valide le ticket xxx » : Claude commite uniquement les fichiers liés au ticket, pousse, ouvre la PR (et celles des sous-tickets) et lance l'agent `relecteur-pr` sur toutes ces PR ;
 5. `relecteur-pr` fusionne toutes les PR et met à jour les tickets (fini), ou, à la moindre remarque ou question sur l'une d'elles, ne fusionne rien et la renvoie : Claude corrige sans commiter, l'explique, retour à l'étape 3.
 

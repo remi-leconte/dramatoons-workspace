@@ -104,8 +104,8 @@ Avec Claude, la relecture et les étapes 5 et 6 sont faites par l'agent `relecte
 
 ## Cycle d'un ticket avec Claude
 1. **Discussion** : l'utilisateur et Claude discutent du ticket. Claude ne crée rien et ne code rien.
-2. **Développement** : l'utilisateur valide ce qui a été dit. Claude crée le ticket (Release, Technical label), la branche, passe le ticket en `Tâche en cours`, code **sans commiter**, puis résume ce qu'il a fait.
-3. **Relecture par l'utilisateur** : il pose ses questions, demande des modifications ; Claude les fait, toujours sans commiter.
+2. **Développement** : l'utilisateur valide ce qui a été dit. Claude crée le ticket (Release, Technical label), la branche, passe le ticket en `Tâche en cours`, code **sans commiter**, puis lance l'agent `testeur` avec le ticket et la liste des fichiers modifiés (sans lui dire quels résultats attendre). Tant que le verdict est `ÉCHEC`, Claude corrige et relance `testeur`. Un échec dû à une règle ambiguë ou muette se fait trancher par l'utilisateur. Quand le verdict est `VALIDÉ`, Claude résume ce qu'il a fait et le résultat des tests.
+3. **Relecture par l'utilisateur** : il pose ses questions, demande des modifications ; Claude les fait, toujours sans commiter, et relance `testeur` jusqu'au verdict `VALIDÉ` avant de rendre la main.
 4. **Validation** : sur « je valide le ticket xxx », Claude :
    - commite **uniquement les fichiers liés au ticket** (ajoutés un par un, jamais `git add -A` ni `git commit -a`) ; les autres changements non commités du dépôt restent tels quels ;
    - pousse, ouvre la PR vers `release/vX.Y.Z` (ou réutilise la PR déjà ouverte), passe le ticket en `Merge Request` et l'assigne à `remi-leconte` ;
