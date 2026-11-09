@@ -3,7 +3,9 @@
 ### webtoon - base
 1. Tous les utilisateurs peuvent créer un webtoon, il sera alors dépublié (webtoon.publish = 0)
 2. Un webtoon est une entrée dans la table webtoon et une ou plusieurs dans la table webtoonTitle.
-3. Si un utilisateur suit un webtoon cela signifie qu'il existe une entrée dans la table webtoonUser avec l'id du webtoon et l'id de l'utilisateur et qu'au moins 1 champ (rate, state ou bookmark) est non null.
+3. Si un utilisateur suit un webtoon cela signifie qu'il existe une entrée dans la table webtoonUser avec l'id du webtoon et l'id de l'utilisateur et qu'au moins 1 champ (rate, state ou bookmark) est renseigné. Un bookmark à 0 équivaut à un bookmark null.
+   - Donner une note, un état ou un bookmark (différent de 0) à un webtoon crée l'entrée webtoonUser si elle n'existe pas.
+   - Retirer la note, l'état et le bookmark (bookmark à 0 ou vide) supprime l'entrée webtoonUser : il n'existe jamais d'entrée webtoonUser vide.
 4. Un utilisateur non connecté n'a accès à aucun webtoon.
 5. Un webtoon peut être visible via : l'onglet bibliothèque, l'onglet catalogue, l'administration, les extensions navigateurs et la barre de recherche principale du site dans l'entête.
 6. Dans ces règles, « modifier/supprimer un webtoon » porte sur la table webtoon (y compris sa couverture, champ image) et ses titres (webtoonTitle). Le suivi (webtoonUser) n'en fait pas partie.
@@ -29,4 +31,4 @@
 3. Si le webtoon est publié puis dépublié mais que personne d'autre que le créateur ne suit le webtoon alors le créateur peut continuer à le modifier/supprimer.
 ### webtoon - autres
 1. Les données de la table webtoonUser ne doivent être visibles que par l'utilisateur concerné (webtoonUser.reader) et les modérateurs/administrateurs. Seuls les totaux stockés dans webtoon (règle 2) en dérivent.
-2. La note moyenne et le nombre de lecteurs (webtoon.averageRating et webtoon.readersCount) sont recalculés à partir de tous les suivis à chaque modification d'un suivi, que le webtoon soit publié ou non. Ils sont visibles par tous ceux qui voient le webtoon.
+2. La note moyenne et le nombre de lecteurs (webtoon.averageRating et webtoon.readersCount) sont recalculés à partir de tous les suivis à chaque modification d'un suivi, que le webtoon soit publié ou non. Ils sont visibles par tous ceux qui voient le webtoon. Un lecteur est un suivi dont l'état n'est pas « Pas intéressé » (break) ; la note moyenne porte sur toutes les notes.
