@@ -25,7 +25,7 @@
 2. Si le webtoon est publié alors le créateur ne pourra plus le modifier/supprimer (webtoon, webtoonTitle) et il apparaitra dans le catalogue et dans la bibliothèque de ceux qui le suivent.
 ### webtoon - cas spécifique (webtoon publié, suivi par quelqu'un d'autre que le créateur, puis dépublié)
 1. Dans le cas où un utilisateur suit un webtoon dépublié et qu'il n'en est pas le créateur alors il le verra dans sa bibliothèque et pourra continuer à modifier les données de suivi.
-2. Si au moins 1 utilisateur (autre que le créateur) suit un webtoon dépublié alors personne ne pourra modifier/supprimer le webtoon à part un modérateur/administrateur via l'administration.
+2. Si au moins 1 utilisateur (autre que le créateur) suit un webtoon dépublié alors personne ne pourra modifier/supprimer le webtoon à part un modérateur/administrateur.
 3. Si le webtoon est publié puis dépublié mais que personne d'autre que le créateur ne suit le webtoon alors le créateur peut continuer à le modifier/supprimer.
 ### webtoon - autres
 1. Les données de la table webtoonUser ne doivent être visibles que par l'utilisateur concerné (webtoonUser.reader) et les modérateurs/administrateurs. Seuls les totaux stockés dans webtoon (règle 2) en dérivent.
