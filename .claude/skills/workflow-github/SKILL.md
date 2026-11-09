@@ -6,12 +6,12 @@ description: Workflow git et GitHub de Dramatoons (Release-Driven) - branches fe
 # Workflow GitHub de Dramatoons (Release-Driven)
 
 ## Ce que Claude peut faire
-- **Ne jamais commiter de lui-même**, dans aucun dépôt (y compris `dramatoons-workspace`) : après toute modification de fichier, laisser les changements non commités et attendre que l'utilisateur les ait relus et demande le commit.
+- **Ne jamais commiter de lui-même**, dans aucun dépôt (y compris `dramatoons-workspace`) : après toute modification de fichier, laisser les changements non commités et attendre que l'utilisateur les ait relus et demande le commit. Pour un ticket, cette demande est « je valide le ticket xxx » (voir « Cycle d'un ticket avec Claude »).
 - Travailler uniquement sur les branches de ticket (`<technical label>/...` et `hotfix/...`) : les créer, y commiter, les pousser, ouvrir une PR.
 - Ne jamais commiter, fusionner ni pousser sur `main` ou une branche `release/*`, sauf demande explicite de l'utilisateur. Côté GitHub, un ruleset protège `main` et `release/*` (api et front) : pas de push direct, pas de force push, pas de suppression, fusion uniquement par PR (0 approbation requise).
 - Créer les tickets à la demande de l'utilisateur et remplir leurs champs Release et Technical label.
 - Faire avancer les statuts des tickets jusqu'à `Ready for Release`. Les statuts suivants (`Recette`, `Ready for Prod`, `Done`) seulement à la demande de l'utilisateur.
-- L'utilisateur relit et fusionne les PR. Une fois la PR fusionnée : passer le ticket en `Ready for Release` et mettre à jour la branche `release/vX.Y.Z` locale (`git pull --ff-only`).
+- L'utilisateur ne relit pas les PR : il valide le code avant le commit, et l'agent `relecteur-pr` relit et fusionne la PR (voir « Cycle d'un ticket avec Claude »).
 - Garder les branches de ticket (en local et sur GitHub) jusqu'à la mise en production de la release ; elles peuvent être supprimées ensuite.
 - La mise en recette (staging) et la mise en production sont faites à la main par l'utilisateur, qui valide aussi la recette. Il n'y a pas encore de chaîne CI/CD.
 - Accès GitHub : remotes en HTTPS, authentifiés par `gh` (`gh auth setup-git`). Pas de SSH (la clé a une passphrase).
@@ -81,7 +81,7 @@ Noms exacts : `Backlog` → `Tâche en cours` → `Merge Request` → `Ready for
 | --- | --- |
 | Création du ticket | `Backlog` |
 | Création de la branche en local (début du développement) | `Tâche en cours` |
-| PR ouverte | `Merge Request` |
+| PR ouverte | `Merge Request`, et assigner le ticket à l'utilisateur (`remi-leconte`) |
 | PR refusée | `Tâche en cours`, ou `Tâche à corriger` si le ticket est déjà passé par la recette |
 | PR acceptée et fusionnée dans la release | `Ready for Release` |
 | Staging mis à jour avec la branche release | `Recette` |
@@ -96,9 +96,24 @@ Noms exacts : `Backlog` → `Tâche en cours` → `Merge Request` → `Ready for
 1. Vérifier que le ticket porte la version de la release en cours (champ Release) et un Technical label. Dans un dépôt autre que celui du ticket principal, travailler avec le sous-ticket de ce dépôt.
 2. Créer `<technical label>/#<id>-<description>` depuis `release/vX.Y.Z`, puis passer le ticket en `Tâche en cours`.
 3. Développer et commiter sur cette branche.
-4. Ouvrir une PR de cette branche vers `release/vX.Y.Z`, puis passer le ticket en `Merge Request`.
+4. Ouvrir une PR de cette branche vers `release/vX.Y.Z`, puis passer le ticket en `Merge Request` et l'assigner à `remi-leconte`.
 5. Si la PR est refusée : corriger les retours, puis ouvrir une nouvelle PR, jusqu'à ce qu'elle soit acceptée.
 6. Si la PR est acceptée : fusionner, puis passer le ticket en `Ready for Release`.
+
+Avec Claude, la relecture et les étapes 5 et 6 sont faites par l'agent `relecteur-pr` : voir ci-dessous.
+
+## Cycle d'un ticket avec Claude
+1. **Discussion** : l'utilisateur et Claude discutent du ticket. Claude ne crée rien et ne code rien.
+2. **Développement** : l'utilisateur valide ce qui a été dit. Claude crée le ticket (Release, Technical label), la branche, passe le ticket en `Tâche en cours`, code **sans commiter**, puis résume ce qu'il a fait.
+3. **Relecture par l'utilisateur** : il pose ses questions, demande des modifications ; Claude les fait, toujours sans commiter.
+4. **Validation** : sur « je valide le ticket xxx », Claude :
+   - commite **uniquement les fichiers liés au ticket** (ajoutés un par un, jamais `git add -A` ni `git commit -a`) ; les autres changements non commités du dépôt restent tels quels ;
+   - pousse, ouvre la PR vers `release/vX.Y.Z` (ou réutilise la PR déjà ouverte), passe le ticket en `Merge Request` et l'assigne à `remi-leconte` ;
+   - si le ticket a des sous-tickets : fait de même dans chaque dépôt concerné, avec la branche et la PR de chaque sous-ticket ;
+   - lance l'agent `relecteur-pr` une seule fois avec toutes les PR (ticket principal et sous-tickets) : pour chacune, le dépôt, la PR et le ticket.
+5. **Retour de `relecteur-pr`** (pour l'instant, toute remarque est bloquante, même de style) :
+   - `FUSIONNÉE` : toutes les PR sont fusionnées et tous les tickets en `Ready for Release`. Claude met à jour les branches release locales si l'agent ne l'a pas fait, le dit à l'utilisateur : c'est fini.
+   - `BLOQUÉE` (au moins une remarque ou question, sur n'importe laquelle des PR ; aucune n'est alors fusionnée) : Claude corrige, **sans commiter**, puis explique à l'utilisateur le problème et sa correction ; retour à l'étape 3. Une question de l'agent est aussi un problème : le code est faux, ou une précision manque (fichier `.md`, `CLAUDE.md`, skill, commentaire « pourquoi ») ; Claude la corrige là où elle manque plutôt que de répondre à l'agent.
 
 ## Recette et mise en production d'une release
 1. Mettre à jour le staging avec `release/vX.Y.Z`, puis passer les tickets `Ready for Release` en `Recette`.
