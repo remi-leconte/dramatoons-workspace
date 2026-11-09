@@ -34,8 +34,9 @@
 
 ### utilisateur - rôles
 1. Trois rôles hiérarchiques : utilisateur < modérateur < administrateur. Chaque rôle a tous les droits du rôle inférieur.
-2. Le modérateur a des droits étendus sur les webtoons (voir webtoons.md), mais aucun droit sur les autres comptes.
+2. Le modérateur a des droits étendus sur les webtoons (voir webtoons.md). Sur les comptes, il n'a que les droits d'un utilisateur.
 
 ### utilisateur - données visibles
-1. L'email, l'état de vérification et l'état du compte (actif ou non) ne sont visibles que par l'utilisateur lui-même et les administrateurs.
-2. Le login, le rôle et les dates (création, dernière connexion) des utilisateurs sont lisibles par tout le monde.
+1. Le login, le rôle le plus haut et la date de création d'un compte sont lisibles par tout utilisateur connecté (pas par un visiteur non connecté).
+2. Toutes les autres informations (email, état de vérification, état du compte, liste des rôles, dates de modification et de dernière connexion) ne sont visibles que par l'utilisateur lui-même et les administrateurs.
+3. La liste des utilisateurs (avec ses filtres et tris) n'est accessible qu'aux administrateurs.
