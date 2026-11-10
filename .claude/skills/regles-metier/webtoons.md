@@ -11,6 +11,7 @@
 6. Dans ces règles, « modifier/supprimer un webtoon » porte sur la table webtoon (y compris sa couverture, champ image) et ses titres (webtoonTitle). Le suivi (webtoonUser) n'en fait pas partie.
 7. Le créateur d'un webtoon est l'utilisateur qui l'a créé. Personne ne peut créer un webtoon au nom d'un autre, ni le réattribuer ou le donner à quelqu'un d'autre. Seule exception : la suppression d'un compte (voir les règles utilisateurs).
 8. Le slug n'est modifiable par personne : il est calculé à la création à partir du titre principal, et recalculé à chaque modification de ce titre.
+9. La couverture d'un webtoon est une image JPEG de 1 Mo au maximum. Tout autre fichier est refusé.
 ### webtoon - administration
 1. Seuls les modérateurs ou administrateurs ont accès à l'administration des webtoons. L'administration des utilisateurs est réservée aux administrateurs (voir utilisateurs.md) : dans l'administration des webtoons, un modérateur voit le login des lecteurs mais pas leur fiche.
 2. Tous les webtoons sont visibles dans l'administration et les modo/admin ont un accès complet au webtoon (modification/suppression).
