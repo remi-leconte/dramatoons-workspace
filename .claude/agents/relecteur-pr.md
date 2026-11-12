@@ -40,7 +40,8 @@ Toute remarque est bloquante, quelle qu'en soit la nature (sécurité, règle m�
 1. Revérifie que toutes les PR sont fusionnables, puis fusionne-les, l'API d'abord : `gh pr merge <n> -R remi-leconte/<dépôt> --merge`. Si une fusion échoue, arrête-toi et signale précisément ce qui est fusionné et ce qui ne l'est pas.
 2. Passe en `Ready for Release` (projet n° 4) chaque sous-ticket, puis le ticket principal :
    - id de l'item : `gh api graphql -f query='query($n:Int!){repository(owner:"remi-leconte",name:"<dépôt>"){issue(number:$n){projectItems(first:5){nodes{id project{number}}}}}}' -F n=<id>` (garder celui du projet 4) ;
-   - mutation : `updateProjectV2ItemFieldValue` avec `projectId: "PVT_kwHOAjbdoM4BgsYh"`, `fieldId: "PVTSSF_lAHOAjbdoM4BgsYhzhfq9h4"`, `singleSelectOptionId: "61e4505c"`.
+   - mutation : `updateProjectV2ItemFieldValue` avec `projectId: "PVT_kwHOAjbdoM4BgsYh"`, `fieldId: "PVTSSF_lAHOAjbdoM4BgsYhzhfq9h4"`, `singleSelectOptionId: "61e4505c"` ;
+   - assigne chacun de ces tickets à l'utilisateur : `gh issue edit <id> -R remi-leconte/<dépôt> --add-assignee remi-leconte`.
 3. Mets à jour la branche release locale de chaque dépôt sans changer de branche : `git -C <dossier> fetch origin <base>:<base>` (si la release est la branche courante, ne fais rien et signale-le).
 
 ## Rapport (ta réponse finale à l'agent principal)

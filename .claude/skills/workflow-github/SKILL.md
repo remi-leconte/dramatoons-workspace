@@ -81,9 +81,9 @@ Noms exacts : `Backlog` → `Tâche en cours` → `Merge Request` → `Ready for
 | --- | --- |
 | Création du ticket | `Backlog` |
 | Création de la branche en local (début du développement) | `Tâche en cours` |
-| PR ouverte | `Merge Request`, et assigner le ticket à l'utilisateur (`remi-leconte`) |
+| PR ouverte | `Merge Request` |
 | PR refusée | `Tâche en cours`, ou `Tâche à corriger` si le ticket est déjà passé par la recette |
-| PR acceptée et fusionnée dans la release | `Ready for Release` |
+| PR acceptée et fusionnée dans la release | `Ready for Release`, et assigner le ticket à l'utilisateur (`remi-leconte`) |
 | Staging mis à jour avec la branche release | `Recette` |
 | Recette échouée | `Tâche à corriger`. Un retour arrière (rollback) du staging peut être nécessaire. |
 | Recette réussie | `Ready for Prod` |
@@ -96,9 +96,9 @@ Noms exacts : `Backlog` → `Tâche en cours` → `Merge Request` → `Ready for
 1. Vérifier que le ticket porte la version de la release en cours (champ Release) et un Technical label. Dans un dépôt autre que celui du ticket principal, travailler avec le sous-ticket de ce dépôt.
 2. Créer `<technical label>/#<id>-<description>` depuis `release/vX.Y.Z`, puis passer le ticket en `Tâche en cours`.
 3. Développer et commiter sur cette branche.
-4. Ouvrir une PR de cette branche vers `release/vX.Y.Z`, puis passer le ticket en `Merge Request` et l'assigner à `remi-leconte`.
+4. Ouvrir une PR de cette branche vers `release/vX.Y.Z`, puis passer le ticket en `Merge Request`.
 5. Si la PR est refusée : corriger les retours, puis ouvrir une nouvelle PR, jusqu'à ce qu'elle soit acceptée.
-6. Si la PR est acceptée : fusionner, puis passer le ticket en `Ready for Release`.
+6. Si la PR est acceptée : fusionner, puis passer le ticket en `Ready for Release` et l'assigner à `remi-leconte`.
 
 Avec Claude, la relecture et les étapes 5 et 6 sont faites par l'agent `relecteur-pr` : voir ci-dessous.
 
@@ -108,11 +108,11 @@ Avec Claude, la relecture et les étapes 5 et 6 sont faites par l'agent `relecte
 3. **Relecture par l'utilisateur** : il pose ses questions, demande des modifications ; Claude les fait, toujours sans commiter, et relance `testeur` jusqu'au verdict `VALIDÉ` avant de rendre la main.
 4. **Validation** : sur « je valide le ticket xxx », Claude :
    - commite **uniquement les fichiers liés au ticket** (ajoutés un par un, jamais `git add -A` ni `git commit -a`) ; les autres changements non commités du dépôt restent tels quels ;
-   - pousse, ouvre la PR vers `release/vX.Y.Z` (ou réutilise la PR déjà ouverte), passe le ticket en `Merge Request` et l'assigne à `remi-leconte` ;
+   - pousse, ouvre la PR vers `release/vX.Y.Z` (ou réutilise la PR déjà ouverte), passe le ticket en `Merge Request` ;
    - si le ticket a des sous-tickets : fait de même dans chaque dépôt concerné, avec la branche et la PR de chaque sous-ticket ;
    - lance l'agent `relecteur-pr` une seule fois avec toutes les PR (ticket principal et sous-tickets) : pour chacune, le dépôt, la PR et le ticket.
 5. **Retour de `relecteur-pr`** (pour l'instant, toute remarque est bloquante, même de style) :
-   - `FUSIONNÉE` : toutes les PR sont fusionnées et tous les tickets en `Ready for Release`. Claude met à jour les branches release locales si l'agent ne l'a pas fait, le dit à l'utilisateur : c'est fini.
+   - `FUSIONNÉE` : toutes les PR sont fusionnées et tous les tickets en `Ready for Release`, assignés à `remi-leconte`. Claude met à jour les branches release locales si l'agent ne l'a pas fait, le dit à l'utilisateur : c'est fini.
    - `BLOQUÉE` (au moins une remarque ou question, sur n'importe laquelle des PR ; aucune n'est alors fusionnée) : Claude corrige, **sans commiter**, puis explique à l'utilisateur le problème et sa correction ; retour à l'étape 3. Une question de l'agent est aussi un problème : le code est faux, ou une précision manque (fichier `.md`, `CLAUDE.md`, skill, commentaire « pourquoi ») ; Claude la corrige là où elle manque plutôt que de répondre à l'agent.
 
 ## Recette et mise en production d'une release
