@@ -10,9 +10,6 @@ secrets.local.txt
 sauvegarde*.sql
 *.sql
 
-# Notes de travail locales
-/resume claude
-
 # Réglages Claude Code propres à ce poste
 .claude/settings.local.json
 
