@@ -10,6 +10,9 @@ secrets.local.txt
 sauvegarde*.sql
 *.sql
 
+# Documents de travail locaux
+/plan-ci-cd.md
+
 # Réglages Claude Code propres à ce poste
 .claude/settings.local.json
 
