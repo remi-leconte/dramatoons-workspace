@@ -13,7 +13,7 @@ description: Workflow git et GitHub de Dramatoons (Release-Driven) - branches fe
 - Faire avancer les statuts des tickets jusqu'à `Ready for Release`. Les statuts suivants (`Recette`, `Ready for Prod`, `Done`) seulement à la demande de l'utilisateur.
 - L'utilisateur ne relit pas les PR : il valide le code avant le commit, et l'agent `relecteur-pr` relit et fusionne la PR (voir « Cycle d'un ticket avec Claude »).
 - Garder les branches de ticket (en local et sur GitHub) jusqu'à la mise en production de la release ; elles peuvent être supprimées ensuite.
-- La mise en recette (staging) et la mise en production sont faites à la main par l'utilisateur, qui valide aussi la recette. Il n'y a pas encore de chaîne CI/CD.
+- La mise en recette (staging) et la mise en production sont faites à la main par l'utilisateur, qui valide aussi la recette. Il n'y a pas encore de déploiement automatique.
 - Accès GitHub : remotes en HTTPS, authentifiés par `gh` (`gh auth setup-git`). Pas de SSH (la clé a une passphrase).
 
 ## Repères
@@ -56,6 +56,7 @@ Format, inspiré de la convention *Conventional Commits* :
 - Titre : `#<id> <titre du ticket>`.
 - Description : ce qui change, comment le tester, et le lien vers le ticket (`Refs #<id>`, ou `Refs remi-leconte/<dépôt>#<id>` si le ticket est dans un autre dépôt).
 - Cible : la branche `release/vX.Y.Z` de la version du ticket, dans le même dépôt que la branche.
+- CI (api et front) : chaque PR vers `main` ou `release/*` lance `.github/workflows/ci.yml`, qui produit deux checks, `Vérifications` (`composer ci` ou `npm run ci`) et `Image prod`. Les rulesets les rendent obligatoires : une PR ne se fusionne qu'avec les deux checks verts. Le détail est dans la section « CI » du `CLAUDE.md` de chaque dépôt. Suivre les checks avec `gh pr checks <PR> --watch`.
 
 ## Tickets et sous-tickets
 Les numéros de ticket sont propres à chaque dépôt : le ticket #12 du front et le #12 de l'API sont deux tickets différents. Chaque branche porte donc le numéro d'un ticket **du dépôt où elle est créée**.
@@ -110,6 +111,7 @@ Avec Claude, la relecture et les étapes 5 et 6 sont faites par l'agent `relecte
    - commite **uniquement les fichiers liés au ticket** (ajoutés un par un, jamais `git add -A` ni `git commit -a`) ; les autres changements non commités du dépôt restent tels quels ;
    - pousse, ouvre la PR vers `release/vX.Y.Z` (ou réutilise la PR déjà ouverte), passe le ticket en `Merge Request` ;
    - si le ticket a des sous-tickets : fait de même dans chaque dépôt concerné, avec la branche et la PR de chaque sous-ticket ;
+   - attend que la CI de toutes les PR soit verte (`gh pr checks`) ; si un check échoue, Claude corrige sans commiter, l'explique à l'utilisateur, et retourne à l'étape 3 ;
    - lance l'agent `relecteur-pr` une seule fois avec toutes les PR (ticket principal et sous-tickets) : pour chacune, le dépôt, la PR et le ticket.
 5. **Retour de `relecteur-pr`** (pour l'instant, toute remarque est bloquante, même de style) :
    - `FUSIONNÉE` : toutes les PR sont fusionnées et tous les tickets en `Ready for Release`, assignés à `remi-leconte`. Claude met à jour les branches release locales si l'agent ne l'a pas fait, le dit à l'utilisateur : c'est fini.
