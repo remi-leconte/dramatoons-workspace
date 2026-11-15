@@ -2,7 +2,7 @@
 
 ### webtoon - base
 1. Tous les utilisateurs peuvent créer un webtoon, il sera alors dépublié (webtoon.publish = 0). Seule exception : un modérateur/administrateur peut le créer directement publié, puisqu'il a le droit de le publier.
-2. Un webtoon est une entrée dans la table webtoon et une ou plusieurs dans la table webtoonTitle.
+2. Un webtoon est une entrée dans la table webtoon et une ou plusieurs dans la table webtoonTitle. Il a obligatoirement un titre principal. Aucun titre (principal ou secondaire) ne peut être vide ou fait uniquement d'espaces.
 3. Si un utilisateur suit un webtoon cela signifie qu'il existe une entrée dans la table webtoonUser avec l'id du webtoon et l'id de l'utilisateur et qu'au moins 1 champ (rate, state ou bookmark) est renseigné. Un bookmark à 0 équivaut à un bookmark null.
    - Donner une note, un état ou un bookmark (différent de 0) à un webtoon crée l'entrée webtoonUser si elle n'existe pas.
    - Retirer la note, l'état et le bookmark (bookmark à 0 ou vide) supprime l'entrée webtoonUser : il n'existe jamais d'entrée webtoonUser vide. C'est le front qui envoie alors la suppression : l'API refuse (422) de vider un suivi.
