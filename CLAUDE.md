@@ -31,9 +31,9 @@ En résumé :
 ## Modèle de données
 - **User** : `login` (identifiant de connexion), `email`, `roles`, `verified` (email validé), `publish` (compte actif), `lastLogin`.
 - **Webtoon** :
-  - `title` (WebtoonTitle principal), `secondaryTitles`, `slug` (calculé depuis le titre) ;
+  - `title` (WebtoonTitle principal), `secondaryTitles` ;
   - `status` (`ongoing` | `completed`), `publish` (visible de tous), `creator` (User) ;
-  - `image` (nom du fichier de couverture) ;
+  - `image` (nom du fichier de couverture, unique à chaque envoi) ;
   - `averageRating` et `readersCount`, dénormalisés et recalculés à chaque écriture d'un WebtoonUser.
 - **WebtoonTitle** : un titre (principal ou alternatif) rattaché à un webtoon.
 - **WebtoonUser** : le suivi d'un webtoon par un lecteur, unique par couple (`reader`, `webtoon`).
