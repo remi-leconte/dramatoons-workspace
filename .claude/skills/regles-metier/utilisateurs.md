@@ -6,15 +6,16 @@
 3. On se connecte avec son login (pas son email) et son mot de passe.
 4. Un compte désactivé (user.publish = 0) ne peut pas se connecter (message « Votre compte a été désactivé. »).
 5. Un email non vérifié n'empêche pas de se connecter ni d'utiliser le site.
-6. La session dure 1 h et se renouvelle automatiquement pendant 30 jours.
+6. La session dure 1 h et se renouvelle automatiquement. Chaque renouvellement repart pour 30 jours : la session ne finit que si l'utilisateur ne revient pas pendant 30 jours.
 
 ### utilisateur - vérification de l'email
 1. Un lien de vérification, valable 1 h, est envoyé à l'inscription et à chaque changement d'email. Après un changement d'email, le compte repasse à « non vérifié ».
-2. L'utilisateur peut redemander un lien depuis son profil.
+2. L'utilisateur peut redemander un lien depuis son profil. La réponse est la même, que l'email soit inconnu, déjà vérifié ou non : le site ne révèle pas si une adresse a un compte.
 
 ### utilisateur - mot de passe oublié
 1. L'utilisateur saisit son email et reçoit un lien, valable 1 h, pour choisir un nouveau mot de passe. Si l'email est inconnu, le site ne le signale pas.
 2. Le nouveau mot de passe doit faire au moins 6 caractères.
+3. Le lien de mot de passe oublié et le lien de vérification de l'email sont indépendants : chacun ne sert qu'à son usage, et demander l'un n'invalide pas l'autre.
 
 ### utilisateur - profil
 1. Un utilisateur, quel que soit son rôle, peut modifier son login, son email et son mot de passe. Après un changement de login, il est déconnecté et doit se reconnecter.
@@ -27,14 +28,14 @@
 ### utilisateur - administration
 1. Seuls les administrateurs ont accès à l'administration des utilisateurs (les modérateurs n'y ont pas accès).
 2. Un administrateur peut lister, filtrer et trier les utilisateurs, et voir leurs suivis.
-3. Un administrateur peut modifier le login, l'email et le rôle d'un utilisateur (un seul rôle : utilisateur, modérateur ou administrateur).
+3. Un administrateur peut modifier le login, l'email et le rôle d'un utilisateur (un seul rôle : utilisateur, modérateur ou administrateur). Il ne peut pas modifier son mot de passe : il peut seulement lui envoyer l'email de mot de passe oublié (règle 4).
 4. Un administrateur peut envoyer à un utilisateur l'email de mot de passe oublié ou un nouveau lien de vérification, et supprimer son compte.
 5. Un administrateur peut activer ou désactiver un compte (user.publish).
 6. Le premier administrateur est créé en ligne de commande (`app:create-admin`).
 
 ### utilisateur - rôles
 1. Trois rôles hiérarchiques : utilisateur < modérateur < administrateur. Chaque rôle a tous les droits du rôle inférieur.
-2. Le modérateur a des droits étendus sur les webtoons (voir webtoons.md). Sur les comptes, il n'a que les droits d'un utilisateur.
+2. Le modérateur a des droits étendus sur les webtoons (voir webtoons.md). Il voit les suivis de tous les utilisateurs (voir webtoons.md, suivis 1) mais ne peut pas les modifier. Sur les comptes, il n'a que les droits d'un utilisateur : pas d'accès à l'administration des utilisateurs.
 
 ### utilisateur - données visibles
 1. Le login, le rôle le plus haut et la date de création d'un compte sont lisibles par tout utilisateur connecté (pas par un visiteur non connecté).
