@@ -9,7 +9,7 @@ description: Workflow git et GitHub de Dramatoons (Release-Driven) - branches fe
 - **Ne jamais commiter de lui-même**, dans aucun dépôt (y compris `dramatoons-workspace`) : après toute modification de fichier, laisser les changements non commités et attendre que l'utilisateur les ait relus et demande le commit. Pour un ticket, cette demande est « je valide le ticket xxx » (voir « Cycle d'un ticket avec Claude »).
 - Travailler uniquement sur les branches de ticket (`<technical label>/...` et `hotfix/...`) : les créer, y commiter, les pousser, ouvrir une PR.
 - Ne jamais commiter, fusionner ni pousser sur `main` ou une branche `release/*`, sauf demande explicite de l'utilisateur. Côté GitHub, un ruleset protège `main` et `release/*` (api et front) : pas de push direct, pas de force push, pas de suppression, fusion uniquement par PR (0 approbation requise).
-- Créer les tickets à la demande de l'utilisateur et remplir leurs champs Release et Technical label.
+- Créer un ticket GitHub seulement avec l'accord explicite de l'utilisateur, y compris un ticket de correction découvert pendant un développement : proposer le ticket (titre, problème, Release, Technical label) et attendre son accord. Remplir ensuite ses champs Release et Technical label.
 - Faire avancer les statuts des tickets jusqu'à `Ready for Release`. Les statuts suivants (`Recette`, `Ready for Prod`, `Done`) seulement à la demande de l'utilisateur.
 - L'utilisateur ne relit pas les PR : il valide le code avant le commit, et l'agent `relecteur-pr` relit et fusionne la PR (voir « Cycle d'un ticket avec Claude »).
 - Garder les branches de ticket (en local et sur GitHub) jusqu'à la mise en production de la release ; elles peuvent être supprimées ensuite.
