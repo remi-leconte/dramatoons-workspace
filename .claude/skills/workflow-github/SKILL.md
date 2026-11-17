@@ -56,7 +56,7 @@ Format, inspiré de la convention *Conventional Commits* :
 - Titre : `#<id> <titre du ticket>`.
 - Description : ce qui change, comment le tester, et le lien vers le ticket (`Refs #<id>`, ou `Refs remi-leconte/<dépôt>#<id>` si le ticket est dans un autre dépôt).
 - Cible : la branche `release/vX.Y.Z` de la version du ticket, dans le même dépôt que la branche.
-- CI (api et front) : chaque PR vers `main` ou `release/*` lance `.github/workflows/ci.yml`, qui produit les checks `Vérifications` (`composer ci` ou `npm run ci`), `Image prod` et, dans l'API, `Tests` (`composer test`). Les rulesets les rendent obligatoires : une PR ne se fusionne qu'avec tous ses checks verts. Le détail est dans la section « CI » du `CLAUDE.md` de chaque dépôt. Suivre les checks avec `gh pr checks <PR> --watch`.
+- CI (api et front) : chaque PR vers `main` ou `release/*` lance `.github/workflows/ci.yml`, qui produit les checks `Vérifications` (`composer ci` ou `npm run ci`), `Tests` (`composer test` ou `npm test`) et `Image prod`. Les rulesets les rendent obligatoires : une PR ne se fusionne qu'avec tous ses checks verts. Le détail est dans la section « CI » du `CLAUDE.md` de chaque dépôt. Suivre les checks avec `gh pr checks <PR> --watch`.
 
 ## Tickets et sous-tickets
 Les numéros de ticket sont propres à chaque dépôt : le ticket #12 du front et le #12 de l'API sont deux tickets différents. Chaque branche porte donc le numéro d'un ticket **du dépôt où elle est créée**.
