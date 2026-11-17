@@ -13,7 +13,7 @@ description: Workflow git et GitHub de Dramatoons (Release-Driven) - branches fe
 - Faire avancer les statuts des tickets jusqu'à `Ready for Release`. Les statuts suivants (`Recette`, `Ready for Prod`, `Done`) seulement à la demande de l'utilisateur.
 - L'utilisateur ne relit pas les PR : il valide le code avant le commit, et l'agent `relecteur-pr` relit et fusionne la PR (voir « Cycle d'un ticket avec Claude »).
 - Garder les branches de ticket (en local et sur GitHub) jusqu'à la mise en production de la release ; elles peuvent être supprimées ensuite.
-- La mise en recette (staging) et la mise en production sont faites à la main par l'utilisateur, qui valide aussi la recette. Il n'y a pas encore de déploiement automatique.
+- La recette (staging) est mise à jour automatiquement à chaque fusion dans `release/*` : le workflow `publish.yml` de l'API et du front publie l'image puis la déploie (job « Déploiement recette »). L'utilisateur valide la recette. La mise en production est faite à la main par l'utilisateur ; Claude ne la déclenche jamais.
 - Accès GitHub : remotes en HTTPS, authentifiés par `gh` (`gh auth setup-git`). Pas de SSH (la clé a une passphrase).
 
 ## Repères
@@ -86,7 +86,7 @@ Noms exacts : `Backlog` → `Tâche en cours` → `Merge Request` → `Ready for
 | PR refusée | `Tâche en cours`, ou `Tâche à corriger` si le ticket est déjà passé par la recette |
 | PR acceptée et fusionnée dans la release | `Ready for Release`, et assigner le ticket à l'utilisateur (`remi-leconte`) |
 | Staging mis à jour avec la branche release | `Recette` |
-| Recette échouée | `Tâche à corriger`. Un retour arrière (rollback) du staging peut être nécessaire. |
+| Recette échouée | `Tâche à corriger`. Un retour arrière (rollback) du staging peut être nécessaire : relancer (« Re-run jobs ») le workflow « Publication » d'un commit précédent de la release. |
 | Recette réussie | `Ready for Prod` |
 | Mise en production | `Done` |
 
@@ -119,7 +119,7 @@ Avec Claude, la relecture et les étapes 5 et 6 sont faites par l'agent `relecte
    - `BLOQUÉE` (au moins une remarque ou question, sur n'importe laquelle des PR ; aucune n'est alors fusionnée) : Claude corrige, **sans commiter**, puis explique à l'utilisateur le problème et sa correction ; retour à l'étape 3. Une question de l'agent est aussi un problème : le code est faux, ou une précision manque (fichier `.md`, `CLAUDE.md`, skill, commentaire « pourquoi ») ; Claude la corrige là où elle manque plutôt que de répondre à l'agent.
 
 ## Recette et mise en production d'une release
-1. Mettre à jour le staging avec `release/vX.Y.Z`, puis passer les tickets `Ready for Release` en `Recette`.
+1. Le staging est à jour avec `release/vX.Y.Z` dès que le job « Déploiement recette » de la dernière fusion a réussi (API et front) : passer alors les tickets `Ready for Release` en `Recette`.
 2. Recetter chaque ticket : `Ready for Prod` si c'est bon, `Tâche à corriger` sinon.
 3. Quand **tous** les tickets de la version sont en `Ready for Prod` : fusionner `release/vX.Y.Z` dans `main` (par PR, imposé par le ruleset) et poser le tag `vX.Y.Z` sur `main`.
 4. Faire une dernière recette de `main` sur le staging.

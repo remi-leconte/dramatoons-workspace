@@ -22,3 +22,6 @@ sauvegarde*.sql
 .idea/
 .DS_Store
 Thumbs.db
+
+# Script de déploiement installé sur le serveur (détails d'infrastructure, dépôts publics)
+/serveur/
