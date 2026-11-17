@@ -86,7 +86,7 @@ Noms exacts : `Backlog` → `Tâche en cours` → `Merge Request` → `Ready for
 | PR refusée | `Tâche en cours`, ou `Tâche à corriger` si le ticket est déjà passé par la recette |
 | PR acceptée et fusionnée dans la release | `Ready for Release`, et assigner le ticket à l'utilisateur (`remi-leconte`) |
 | Staging mis à jour avec la branche release | `Recette` |
-| Recette échouée | `Tâche à corriger`. Un retour arrière (rollback) du staging peut être nécessaire : relancer (« Re-run jobs ») le workflow « Publication » d'un commit précédent de la release. |
+| Recette échouée | `Tâche à corriger`. Un retour arrière (rollback) du staging peut être nécessaire : dans GitHub, relancer **seulement** le job « Déploiement recette » (« Re-run this job ») du run « Publication » d'un commit précédent de la release, jamais « Re-run all jobs », qui reconstruirait l'image. |
 | Recette réussie | `Ready for Prod` |
 | Mise en production | `Done` |
 
@@ -122,8 +122,8 @@ Avec Claude, la relecture et les étapes 5 et 6 sont faites par l'agent `relecte
 1. Le staging est à jour avec `release/vX.Y.Z` dès que le job « Déploiement recette » de la dernière fusion a réussi (API et front) : passer alors les tickets `Ready for Release` en `Recette`.
 2. Recetter chaque ticket : `Ready for Prod` si c'est bon, `Tâche à corriger` sinon.
 3. Quand **tous** les tickets de la version sont en `Ready for Prod` : fusionner `release/vX.Y.Z` dans `main` (par PR, imposé par le ruleset) et poser le tag `vX.Y.Z` sur `main`.
-4. Faire une dernière recette de `main` sur le staging.
-5. Si tout est bon, mettre à jour la production avec `main`, puis passer les tickets en `Done`.
+4. Faire une dernière recette de `main` sur le staging, avec l'image `vX.Y.Z` publiée par le tag. Pas encore automatique : l'utilisateur lance à la main, sur le serveur, le script de déploiement avec le tag au lieu du commit (procédure dans la section « Publication et déploiement » du `CLAUDE.md` de l'API et du front).
+5. Si tout est bon, l'utilisateur met à jour la production avec l'image `vX.Y.Z` (même section ; le serveur ne construit plus d'image), puis passer les tickets en `Done`. Claude ne déploie jamais en production.
 6. Préparer la version suivante :
    - si elle n'est pas commencée : créer `release/vX.Y.0` suivante depuis `main` ;
    - si elle est déjà commencée : fusionner `main` dans sa branche `release/*`.
