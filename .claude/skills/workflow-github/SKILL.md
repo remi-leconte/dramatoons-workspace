@@ -122,7 +122,7 @@ Avec Claude, la relecture et les étapes 5 et 6 sont faites par l'agent `relecte
 1. Le staging est à jour avec `release/vX.Y.Z` dès que le job « Déploiement recette » de la dernière fusion a réussi (API et front) : passer alors les tickets `Ready for Release` en `Recette`.
 2. Recetter chaque ticket : `Ready for Prod` si c'est bon, `Tâche à corriger` sinon.
 3. Quand **tous** les tickets de la version sont en `Ready for Prod` : fusionner `release/vX.Y.Z` dans `main`, par PR (imposé par le ruleset), dans chaque dépôt concerné. La release doit déjà contenir tout `main` (sinon, fusionner d'abord `main` dans la release et recetter) : la livraison s'arrête si `main` diffère du dernier commit recetté. Ne pas poser de tag : la livraison le pose.
-4. La fusion lance le workflow `livraison.yml` (section « Livraison » du `CLAUDE.md` de l'API et du front) : tag `vX.Y.Z`, image recettée réétiquetée `vX.Y.Z` sans reconstruction, déploiement de `vX.Y.Z` en recette. L'utilisateur fait une dernière vérification de la recette.
+4. La fusion lance le workflow `livraison.yml` (section « Livraison » du `CLAUDE.md` de l'API et du front) : tag `vX.Y.Z`, image recettée réétiquetée `vX.Y.Z` sans reconstruction, déploiement de `vX.Y.Z` en recette. L'utilisateur fait une dernière vérification de la recette. Jusqu'à l'approbation ou au rejet de la production, ne rien fusionner dans une branche `release/*` : la recette serait redéployée par-dessus `vX.Y.Z`.
 5. Si tout est bon, l'utilisateur approuve dans GitHub le job « Déploiement production », celui de l'API d'abord, puis celui du front. Ensuite, à sa demande, passer les tickets en `Done`.
    Si la dernière vérification échoue : l'utilisateur rejette le job « Déploiement production » (sinon le run en attente bloque la livraison suivante), puis le problème se corrige par un hotfix (voir « Hotfix »).
 6. Préparer la version suivante :
@@ -135,4 +135,4 @@ Un hotfix passe par une release dédiée : seule la fusion d'une `release/vX.Y.Z
 2. La PR du hotfix vise cette release : sa fusion déploie la recette, comme pour un ticket. La recette affiche alors le hotfix, et non plus la release en cours.
 3. Une fois validé :
    - fusionner la release du hotfix dans `main` : la livraison pose le tag (exemple : `v2.4.1`) et déploie, comme pour une release ;
-   - fusionner `main` dans toutes les branches `release/*` en cours de développement.
+   - une fois la production approuvée ou rejetée (pas avant : la recette serait écrasée pendant la dernière vérification), fusionner `main` dans toutes les branches `release/*` en cours de développement.
