@@ -13,7 +13,7 @@ description: Workflow git et GitHub de Dramatoons (Release-Driven) - branches fe
 - Faire avancer les statuts des tickets jusqu'à `Ready for Release`. Les statuts suivants (`Recette`, `Ready for Prod`, `Done`) seulement à la demande de l'utilisateur.
 - L'utilisateur ne relit pas les PR : il valide le code avant le commit, et l'agent `relecteur-pr` relit et fusionne la PR (voir « Cycle d'un ticket avec Claude »).
 - Garder les branches de ticket (en local et sur GitHub) jusqu'à la mise en production de la release ; elles peuvent être supprimées ensuite.
-- La recette (staging) est mise à jour automatiquement à chaque fusion dans `release/*` : le workflow `publish.yml` de l'API et du front publie l'image puis la déploie (job « Déploiement recette »). L'utilisateur valide la recette. La mise en production est faite à la main par l'utilisateur ; Claude ne la déclenche jamais.
+- La recette (staging) est mise à jour automatiquement à chaque fusion dans `release/*` : le workflow `publish.yml` de l'API et du front publie l'image puis la déploie (job « Déploiement recette »). L'utilisateur valide la recette. La livraison (tag `vX.Y.Z`, dernière recette, production) suit automatiquement la fusion d'une release dans `main` (workflow `livraison.yml`), et la production attend l'approbation de l'utilisateur. Claude n'approuve ni ne rejette jamais un déploiement en production et ne le déclenche jamais (ni relance d'un job « Déploiement production », ni script lancé sur le serveur).
 - Accès GitHub : remotes en HTTPS, authentifiés par `gh` (`gh auth setup-git`). Pas de SSH (la clé a une passphrase).
 
 ## Repères
@@ -34,7 +34,7 @@ description: Workflow git et GitHub de Dramatoons (Release-Driven) - branches fe
 | `main` | | | Code en production. On n'y travaille jamais directement. |
 | `release/vX.Y.Z` | `main` | `main` | Regroupe les développements d'une version. Existe dans chaque dépôt concerné par la version. On n'y travaille jamais directement. |
 | `<technical label>/#<id>-<description>` | `release/vX.Y.Z` de la version du ticket | `release/vX.Y.Z`, par PR | Un développement = un ticket = une branche. `<technical label>` est la valeur du champ du même nom, `<id>` le numéro du ticket du dépôt concerné (voir « Tickets et sous-tickets »), `<description>` 3 mots maximum, en minuscules et séparés par des tirets. Exemple : `fix/#117-recherche-catalogue`. |
-| `hotfix/#<id>-<description>` | `main` | `main` et toutes les `release/*` en cours | Correctif urgent de la production. |
+| `hotfix/#<id>-<description>` | `release/vX.Y.Z` du hotfix, elle-même créée depuis `main` | cette `release/vX.Y.Z`, par PR | Correctif urgent de la production (voir « Hotfix »). |
 
 ## Messages de commit
 Format, inspiré de la convention *Conventional Commits* :
@@ -121,19 +121,17 @@ Avec Claude, la relecture et les étapes 5 et 6 sont faites par l'agent `relecte
 ## Recette et mise en production d'une release
 1. Le staging est à jour avec `release/vX.Y.Z` dès que le job « Déploiement recette » de la dernière fusion a réussi (API et front) : passer alors les tickets `Ready for Release` en `Recette`.
 2. Recetter chaque ticket : `Ready for Prod` si c'est bon, `Tâche à corriger` sinon.
-3. Quand **tous** les tickets de la version sont en `Ready for Prod` : fusionner `release/vX.Y.Z` dans `main` (par PR, imposé par le ruleset) et poser le tag `vX.Y.Z` sur `main`.
-4. Faire une dernière recette de `main` sur le staging, avec l'image `vX.Y.Z` publiée par le tag. Pas encore automatique : l'utilisateur lance à la main, sur le serveur, le script de déploiement avec le tag au lieu du commit (procédure dans la section « Publication et déploiement » du `CLAUDE.md` de l'API et du front).
-5. Si tout est bon, l'utilisateur met à jour la production avec l'image `vX.Y.Z` (même section ; le serveur ne construit plus d'image), puis passer les tickets en `Done`. Claude ne déploie jamais en production.
+3. Quand **tous** les tickets de la version sont en `Ready for Prod` : fusionner `release/vX.Y.Z` dans `main`, par PR (imposé par le ruleset), dans chaque dépôt concerné. La release doit déjà contenir tout `main` (sinon, fusionner d'abord `main` dans la release et recetter) : la livraison s'arrête si `main` diffère du dernier commit recetté. Ne pas poser de tag : la livraison le pose.
+4. La fusion lance le workflow `livraison.yml` (section « Livraison » du `CLAUDE.md` de l'API et du front) : tag `vX.Y.Z`, image recettée réétiquetée `vX.Y.Z` sans reconstruction, déploiement de `vX.Y.Z` en recette. L'utilisateur fait une dernière vérification de la recette.
+5. Si tout est bon, l'utilisateur approuve dans GitHub le job « Déploiement production », celui de l'API d'abord, puis celui du front. Ensuite, à sa demande, passer les tickets en `Done`.
 6. Préparer la version suivante :
    - si elle n'est pas commencée : créer `release/vX.Y.0` suivante depuis `main` ;
    - si elle est déjà commencée : fusionner `main` dans sa branche `release/*`.
 
 ## Hotfix
-1. Créer `hotfix/#<id>-<description>` depuis `main` et corriger.
-2. Tester le correctif en staging, au choix :
-   - avec la release en cours ;
-   - ou avec une release dédiée, si les développements en cours posent problème.
+Un hotfix passe par une release dédiée : seule la fusion d'une `release/vX.Y.Z` dans `main` est livrée automatiquement, avec l'image recettée.
+1. Créer depuis `main` la release de la version corrigée (exemple : `release/v2.4.1`), puis `hotfix/#<id>-<description>` depuis cette release, et corriger.
+2. La PR du hotfix vise cette release : sa fusion déploie la recette, comme pour un ticket. La recette affiche alors le hotfix, et non plus la release en cours.
 3. Une fois validé :
-   - fusionner le hotfix dans `main` et poser le tag de la version corrigée (exemple : `v2.3.1`) ;
-   - fusionner le hotfix dans toutes les branches `release/*` en cours de développement ;
-   - mettre la production à jour avec `main`.
+   - fusionner la release du hotfix dans `main` : la livraison pose le tag (exemple : `v2.4.1`) et déploie, comme pour une release ;
+   - fusionner `main` dans toutes les branches `release/*` en cours de développement.
