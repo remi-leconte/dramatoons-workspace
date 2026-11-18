@@ -124,6 +124,7 @@ Avec Claude, la relecture et les étapes 5 et 6 sont faites par l'agent `relecte
 3. Quand **tous** les tickets de la version sont en `Ready for Prod` : fusionner `release/vX.Y.Z` dans `main`, par PR (imposé par le ruleset), dans chaque dépôt concerné. La release doit déjà contenir tout `main` (sinon, fusionner d'abord `main` dans la release et recetter) : la livraison s'arrête si `main` diffère du dernier commit recetté. Ne pas poser de tag : la livraison le pose.
 4. La fusion lance le workflow `livraison.yml` (section « Livraison » du `CLAUDE.md` de l'API et du front) : tag `vX.Y.Z`, image recettée réétiquetée `vX.Y.Z` sans reconstruction, déploiement de `vX.Y.Z` en recette. L'utilisateur fait une dernière vérification de la recette.
 5. Si tout est bon, l'utilisateur approuve dans GitHub le job « Déploiement production », celui de l'API d'abord, puis celui du front. Ensuite, à sa demande, passer les tickets en `Done`.
+   Si la dernière vérification échoue : l'utilisateur rejette le job « Déploiement production » (sinon le run en attente bloque la livraison suivante), puis le problème se corrige par un hotfix (voir « Hotfix »).
 6. Préparer la version suivante :
    - si elle n'est pas commencée : créer `release/vX.Y.0` suivante depuis `main` ;
    - si elle est déjà commencée : fusionner `main` dans sa branche `release/*`.
