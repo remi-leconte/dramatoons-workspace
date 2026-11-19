@@ -15,8 +15,8 @@ La racine est le dépôt `remi-leconte/dramatoons-workspace` : il ne contient qu
 1. on discute du ticket, sans rien créer ;
 2. l'utilisateur valide : Claude crée le ticket, écrit le code et ses tests sans commiter, fait vérifier par l'agent `testeur` que les tests couvrent le ticket et passent (corrige et relance jusqu'au verdict `VALIDÉ`), puis résume ce qu'il a fait ;
 3. l'utilisateur relit, pose ses questions, demande des modifications (toujours sans commit, avec un nouveau passage de `testeur`) ;
-4. « je valide le ticket xxx » : Claude commite uniquement les fichiers liés au ticket, pousse, ouvre la PR (et celles des sous-tickets) et lance l'agent `relecteur-pr` sur toutes ces PR ;
-5. `relecteur-pr` fusionne toutes les PR et met à jour les tickets (fini), ou, à la moindre remarque ou question sur l'une d'elles, ne fusionne rien et la renvoie : Claude corrige sans commiter, l'explique, retour à l'étape 3.
+4. « je valide le ticket xxx » : Claude commite uniquement les fichiers liés au ticket, pousse, ouvre la PR (et celles des sous-tickets), qui sont relues dans GitHub par la relecture IA (check « Relecture IA », consignes dans `relecture/consignes.md`) ;
+5. tous les checks verts sur toutes les PR : Claude les fusionne et met à jour les tickets (fini) ; à la moindre remarque ou question sur l'une d'elles, il ne fusionne rien, corrige sans commiter, l'explique, retour à l'étape 3.
 
 En dev : le front répond sur `http://localhost:5173`, l'API sur `http://localhost:8081`. Le réseau Docker externe `global_proxy_network` doit exister.
 
