@@ -10,10 +10,10 @@ description: Workflow git et GitHub de Dramatoons (Release-Driven) - branches fe
 - Travailler uniquement sur les branches de ticket (`<technical label>/...` et `hotfix/...`) : les créer, y commiter, les pousser, ouvrir une PR.
 - Ne jamais commiter, fusionner ni pousser sur `main` ou une branche `release/*`, sauf demande explicite de l'utilisateur. Côté GitHub, un ruleset protège `main` et `release/*` (api et front) : pas de push direct, pas de force push, pas de suppression, fusion uniquement par PR (0 approbation requise).
 - Créer un ticket GitHub seulement avec l'accord explicite de l'utilisateur, y compris un ticket de correction découvert pendant un développement : proposer le ticket (titre, problème, Release, Technical label) et attendre son accord. Remplir ensuite ses champs Release et Technical label.
-- Faire avancer les statuts des tickets jusqu'à `Ready for Release`. Les statuts suivants (`Recette`, `Ready for Prod`, `Done`) seulement à la demande de l'utilisateur.
+- Faire avancer les statuts des tickets jusqu'à `Ready for Release`. Les statuts suivants (`Recette`, `Ready for Prod`) seulement à la demande de l'utilisateur ; `Done` après une mise en production réussie (voir « Recette et mise en production d'une release »).
 - L'utilisateur ne relit pas les PR : il valide le code avant le commit, et l'agent `relecteur-pr` relit et fusionne la PR (voir « Cycle d'un ticket avec Claude »).
-- Garder les branches de ticket (en local et sur GitHub) jusqu'à la mise en production de la release ; elles peuvent être supprimées ensuite.
-- La recette (staging) est mise à jour automatiquement à chaque fusion dans `release/*` : le workflow `publish.yml` de l'API et du front publie l'image puis la déploie (job « Déploiement recette »). L'utilisateur valide la recette. La livraison (tag `vX.Y.Z`, dernière recette, production) suit automatiquement la fusion d'une release dans `main` (workflow `livraison.yml`), et la production attend l'approbation de l'utilisateur. Claude n'approuve ni ne rejette jamais un déploiement en production et ne le déclenche jamais (ni relance d'un job « Déploiement production », ni script lancé sur le serveur).
+- Une branche de ticket ne vit que jusqu'à la fusion de sa PR : GitHub supprime alors la branche distante (réglage « Automatically delete head branches » de l'API et du front), et Claude supprime la branche locale (`git branch -d`, qui refuse une branche non fusionnée), puis `git fetch --prune`. Rien n'est perdu : la fusion par commit de fusion garde les commits dans la release, et la PR fusionnée garde le lien avec le ticket. Pour retravailler un ticket (PR refusée après fusion, `Tâche à corriger`), recréer une branche du même nom depuis la release à jour.
+- La recette (staging) est mise à jour automatiquement à chaque fusion dans `release/*` : le workflow `publish.yml` de l'API et du front publie l'image puis la déploie (job « Déploiement recette »). L'utilisateur valide la recette. La livraison (tag `vX.Y.Z`, production) suit automatiquement la fusion d'une release dans `main` (workflow `livraison.yml`), et la production attend l'approbation de l'utilisateur. Claude n'approuve ni ne rejette jamais un déploiement en production et ne le déclenche jamais (ni relance d'un job « Déploiement production », ni script lancé sur le serveur).
 - Accès GitHub : remotes en HTTPS, authentifiés par `gh` (`gh auth setup-git`). Pas de SSH (la clé a une passphrase).
 
 ## Repères
@@ -115,17 +115,21 @@ Avec Claude, la relecture et les étapes 5 et 6 sont faites par l'agent `relecte
    - attend que la CI de toutes les PR soit verte (`gh pr checks`) ; si un check échoue, Claude corrige sans commiter, l'explique à l'utilisateur, et retourne à l'étape 3 ;
    - lance l'agent `relecteur-pr` une seule fois avec toutes les PR (ticket principal et sous-tickets) : pour chacune, le dépôt, la PR et le ticket.
 5. **Retour de `relecteur-pr`** (pour l'instant, toute remarque est bloquante, même de style) :
-   - `FUSIONNÉE` : toutes les PR sont fusionnées et tous les tickets en `Ready for Release`, assignés à `remi-leconte`. Claude met à jour les branches release locales si l'agent ne l'a pas fait, le dit à l'utilisateur : c'est fini.
+   - `FUSIONNÉE` : toutes les PR sont fusionnées et tous les tickets en `Ready for Release`, assignés à `remi-leconte`. Claude met à jour les branches release locales si l'agent ne l'a pas fait, se place sur la release, supprime les branches locales du ticket (`git branch -d`) et fait `git fetch --prune`, puis le dit à l'utilisateur : c'est fini.
    - `BLOQUÉE` (au moins une remarque ou question, sur n'importe laquelle des PR ; aucune n'est alors fusionnée) : Claude corrige, **sans commiter**, puis explique à l'utilisateur le problème et sa correction ; retour à l'étape 3. Une question de l'agent est aussi un problème : le code est faux, ou une précision manque (fichier `.md`, `CLAUDE.md`, skill, commentaire « pourquoi ») ; Claude la corrige là où elle manque plutôt que de répondre à l'agent.
 
 ## Recette et mise en production d'une release
 1. Le staging est à jour avec `release/vX.Y.Z` dès que le job « Déploiement recette » de la dernière fusion a réussi (API et front) : passer alors les tickets `Ready for Release` en `Recette`.
 2. Recetter chaque ticket : `Ready for Prod` si c'est bon, `Tâche à corriger` sinon.
-3. Quand **tous** les tickets de la version sont en `Ready for Prod` : fusionner `release/vX.Y.Z` dans `main`, par PR (imposé par le ruleset), dans chaque dépôt concerné. La release doit déjà contenir tout `main` (sinon, fusionner d'abord `main` dans la release et recetter) : la livraison s'arrête si `main` diffère du dernier commit recetté. Ne pas poser de tag : la livraison le pose.
-4. La fusion lance le workflow `livraison.yml` (section « Livraison » du `CLAUDE.md` de l'API et du front) : tag `vX.Y.Z`, image recettée réétiquetée `vX.Y.Z` sans reconstruction, déploiement de `vX.Y.Z` en recette. L'utilisateur fait une dernière vérification de la recette. Jusqu'à l'approbation ou au rejet de la production, ne rien fusionner dans une branche `release/*` : la recette serait redéployée par-dessus `vX.Y.Z`.
-5. Si tout est bon, l'utilisateur approuve dans GitHub le job « Déploiement production », celui de l'API d'abord, puis celui du front. Ensuite, à sa demande, passer les tickets en `Done`.
-   Si la dernière vérification échoue : l'utilisateur rejette le job « Déploiement production » (sinon le run en attente bloque la livraison suivante), puis le problème se corrige par un hotfix (voir « Hotfix »).
-6. Préparer la version suivante :
+3. Quand la recette est bonne, l'utilisateur dit « je valide la recette ». C'est sa demande explicite de fusionner la release dans `main`. Claude :
+   - vérifie qu'aucun ticket de la version ne reste en `Recette` (l'utilisateur passe lui-même les tickets en `Ready for Prod` ; les extensions, hors de ce workflow, ne comptent pas) ; s'il en reste, il les signale et ne fusionne rien ;
+   - vérifie que la release contient déjà tout `main` (sinon, le signaler : il faut fusionner `main` dans la release et recetter), car la livraison s'arrête si `main` diffère du dernier commit recetté ;
+   - ouvre la PR `release/vX.Y.Z` → `main` dans chaque dépôt concerné (API et front), attend ses checks (`gh pr checks --watch`) et la fusionne (« Create a merge commit »). Ne pas poser de tag : la livraison le pose ;
+   - suit les runs « Livraison » jusqu'à ce que le job « Déploiement production » attende l'approbation, puis dit à l'utilisateur que tout est prêt pour la mise en production.
+4. La fusion lance le workflow `livraison.yml` (section « Livraison » du `CLAUDE.md` de l'API et du front) : tag `vX.Y.Z`, image recettée réétiquetée `vX.Y.Z` sans reconstruction. La recette n'est pas redéployée : elle tourne déjà sur cette image.
+5. L'utilisateur approuve dans GitHub le job « Déploiement production », celui de l'API d'abord, puis celui du front. Claude vérifie ensuite que les deux jobs ont réussi (`gh run view`, en lecture seule) et passe alors tous les tickets de la version en `Done`.
+   Si la version ne doit finalement pas partir en production : l'utilisateur rejette le job « Déploiement production » (sinon le run en attente bloque la livraison suivante), puis le problème se corrige par un hotfix (voir « Hotfix »).
+6. Après une mise en production réussie, Claude prépare la version suivante :
    - si elle n'est pas commencée : créer `release/vX.Y.0` suivante depuis `main` ;
    - si elle est déjà commencée : fusionner `main` dans sa branche `release/*`.
 
@@ -135,4 +139,4 @@ Un hotfix passe par une release dédiée : seule la fusion d'une `release/vX.Y.Z
 2. La PR du hotfix vise cette release : sa fusion déploie la recette, comme pour un ticket. La recette affiche alors le hotfix, et non plus la release en cours.
 3. Une fois validé :
    - fusionner la release du hotfix dans `main` : la livraison pose le tag (exemple : `v2.4.1`) et déploie, comme pour une release ;
-   - une fois la production approuvée ou rejetée (pas avant : la recette serait écrasée pendant la dernière vérification), fusionner `main` dans toutes les branches `release/*` en cours de développement.
+   - fusionner ensuite `main` dans toutes les branches `release/*` en cours de développement.
