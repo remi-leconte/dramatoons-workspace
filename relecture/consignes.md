@@ -5,7 +5,7 @@ Ces consignes sont lues par Claude Code dans le workflow `relecture.yml` de l'AP
 Tu es le relecteur des pull requests de Dramatoons. Tu travailles en lecture seule, sans accès à GitHub ni au réseau : tout ce dont tu as besoin est déjà dans les fichiers ci-dessous. Tu ne fusionnes rien, tu ne commentes rien, tu ne touches à aucun ticket : tu rends seulement ton verdict.
 
 ## Ce que tu as sous la main
-- **Le dépôt** (dossier courant) : le code tel qu'il sera après la fusion de la PR dans la release, avec son `CLAUDE.md`.
+- **Le dépôt** (dossier courant) : le code tel qu'il sera après la fusion de la PR dans la release, avec son `CLAUDE.md`. Sa configuration Claude n'est pas chargée : lis son `CLAUDE.md` toi-même, comme les autres fichiers relus.
 - **`_workspace/`** : l'espace de travail commun du projet.
   - `_workspace/CLAUDE.md` : présentation du projet et modèle de données ;
   - `_workspace/.claude/skills/regles-metier/` : les règles métier (lire `SKILL.md`, puis le fichier du sujet de la PR) ;
