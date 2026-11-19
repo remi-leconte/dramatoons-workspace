@@ -127,7 +127,10 @@ Avec Claude, la relecture et les étapes 5 et 6 sont faites par l'agent `relecte
    - ouvre la PR `release/vX.Y.Z` → `main` dans chaque dépôt concerné (API et front), attend ses checks (`gh pr checks --watch`) et la fusionne (« Create a merge commit »). Ne pas poser de tag : la livraison le pose ;
    - suit les runs « Livraison » jusqu'à ce que le job « Déploiement production » attende l'approbation, puis dit à l'utilisateur que tout est prêt pour la mise en production.
 4. La fusion lance le workflow `livraison.yml` (section « Livraison » du `CLAUDE.md` de l'API et du front) : tag `vX.Y.Z`, image recettée réétiquetée `vX.Y.Z` sans reconstruction. La recette n'est pas redéployée : elle tourne déjà sur cette image.
-5. L'utilisateur approuve dans GitHub le job « Déploiement production », celui de l'API d'abord, puis celui du front. Claude vérifie ensuite que les deux jobs ont réussi (`gh run view`, en lecture seule) et passe alors tous les tickets de la version en `Done`.
+5. L'utilisateur approuve dans GitHub le job « Déploiement production », celui de l'API d'abord, puis celui du front. Claude vérifie ensuite que les deux jobs ont réussi (`gh run view`, en lecture seule) et passe alors tous les tickets de la version en `Done`. Claude crée ensuite, dans chaque dépôt livré, la release GitHub du tag `vX.Y.Z` (`gh release create vX.Y.Z --verify-tag --latest --title … --notes-file …`) :
+   - titre : `vX.Y.Z : <évolutions majeures>`, seulement les plus grosses ;
+   - description : un court résumé, puis les tickets de la version de ce dépôt regroupés par thème (droits et visibilité, nouveautés, corrections, qualité et tests, intégration et livraison continues…), chacun avec son numéro, et un lien vers la release de l'autre dépôt ;
+   - aucune donnée sensible : ni infrastructure (serveurs, ports, chemins, clés, sauvegardes), ni détail d'exploitation d'une faille corrigée ; un ticket d'exercice annulé (revert) n'y figure pas.
    Si la version ne doit finalement pas partir en production : l'utilisateur rejette le job « Déploiement production » (sinon le run en attente bloque la livraison suivante), puis le problème se corrige par un hotfix (voir « Hotfix »).
 6. Après une mise en production réussie, Claude prépare la version suivante :
    - si elle n'est pas commencée : créer `release/vX.Y.0` suivante depuis `main` ;
