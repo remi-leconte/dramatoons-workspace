@@ -111,7 +111,7 @@ Avec Claude, la relecture est faite par la relecture IA de GitHub, et les étape
    - Exception : une modification qui ne touche que des commentaires ou de la documentation (`.md`, `CLAUDE.md`) ne relance pas `testeur`. Les tests automatiques et la CI suffisent ; la relecture IA relit toujours la PR.
 4. **Validation** : sur « je valide le ticket xxx », Claude :
    - commite **uniquement les fichiers liés au ticket** (ajoutés un par un, jamais `git add -A` ni `git commit -a`) ; les autres changements non commités du dépôt restent tels quels ;
-   - pousse, ouvre la PR vers `release/vX.Y.Z` **en brouillon** (`gh pr create --draft`, ou réutilise la PR déjà ouverte), passe le ticket en `Merge Request` ;
+   - pousse, ouvre la PR vers `release/vX.Y.Z` (jamais de changement de cible ensuite : fermer la PR et en ouvrir une nouvelle) **en brouillon** (`gh pr create --draft`, ou réutilise la PR déjà ouverte), passe le ticket en `Merge Request` ;
    - si le ticket a des sous-tickets : fait de même dans chaque dépôt concerné, avec la branche et la PR de chaque sous-ticket ;
    - une fois toutes les PR du ticket ouvertes, les passe prêtes (`gh pr ready <n> -R remi-leconte/<dépôt>`) : la relecture IA ne tourne pas sur un brouillon, et chaque relecture trouve ainsi toutes les PR liées ;
    - attend la fin de tous les checks de toutes les PR (`gh pr checks <PR> --watch`), relecture IA comprise : les PR d'un même ticket sont relues ensemble, chaque relecture lisant aussi les PR liées des autres dépôts.
