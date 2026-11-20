@@ -2,6 +2,8 @@
 
 [Dramatoons](https://dramatoons.ovh) est un site de suivi de lecture de webtoons (bandes dessinées en ligne) : chaque lecteur tient sa bibliothèque, note les webtoons et retrouve le dernier chapitre lu.
 
+> **Dramatoons n'héberge aucun webtoon.** Il ne conserve que la progression de chaque lecteur (dernier chapitre lu, note, état) : aucun chapitre, aucune planche, et aucun lien vers des plateformes de diffusion non autorisées. Les webtoons se lisent ailleurs, sur les plateformes choisies par le lecteur.
+
 Ce dépôt ne contient pas de code applicatif. C'est l'espace de travail commun aux quatre dépôts du projet. Il porte surtout la configuration de [Claude Code](https://claude.com/claude-code), avec qui le projet est développé à partir de la version 2.4.0 : les instructions, les règles métier et le workflow sont écrits une fois ici, et valent pour tous les dépôts.
 
 ## Les dépôts
