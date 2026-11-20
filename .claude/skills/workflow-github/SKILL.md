@@ -10,10 +10,10 @@ description: Workflow git et GitHub de Dramatoons (Release-Driven) - branches fe
 - Travailler uniquement sur les branches de ticket (`<technical label>/...` et `hotfix/...`) : les créer, y commiter, les pousser, ouvrir une PR.
 - Ne jamais commiter, fusionner ni pousser sur `main` ou une branche `release/*`, sauf demande explicite de l'utilisateur. Côté GitHub, un ruleset protège `main` et `release/*` (api et front) : pas de push direct, pas de force push, pas de suppression, fusion uniquement par PR (0 approbation requise).
 - Créer un ticket GitHub seulement avec l'accord explicite de l'utilisateur, y compris un ticket de correction découvert pendant un développement : proposer le ticket (titre, problème, Release, Technical label) et attendre son accord. Remplir ensuite ses champs Release et Technical label.
-- Faire avancer les statuts des tickets jusqu'à `Ready for Release`. Les statuts suivants (`Recette`, `Ready for Prod`) seulement à la demande de l'utilisateur ; `Done` après une mise en production réussie (voir « Recette et mise en production d'une release »).
+- Faire avancer les statuts des tickets : `In Progress`, `In Review`, puis `In QA` une fois le ticket déployé en recette (voir « Statuts des tickets »). `Ready to Deploy` est réservé à l'utilisateur ; `Done` après une mise en production réussie (voir « Recette et mise en production d'une release »).
 - Une PR extérieure (autre auteur, fork) n'est jamais fusionnée telle quelle : son check « Relecture IA » est rouge. Si son contenu est retenu, Claude le reprend sur une branche de ticket du dépôt, et le cycle normal s'applique.
 - L'utilisateur ne relit pas les PR : il valide le code avant le commit. La relecture IA de GitHub (check « Relecture IA », workflow `relecture.yml`, consignes dans `relecture/consignes.md` à la racine) relit chaque PR, et Claude fusionne les PR d'un ticket une fois toutes vertes : « je valide le ticket xxx » vaut demande de les fusionner (voir « Cycle d'un ticket avec Claude »).
-- Une branche de ticket ne vit que jusqu'à la fusion de sa PR : GitHub supprime alors la branche distante (réglage « Automatically delete head branches » de l'API et du front), et Claude supprime la branche locale (`git branch -d`, qui refuse une branche non fusionnée), puis `git fetch --prune`. Rien n'est perdu : la fusion par commit de fusion garde les commits dans la release, et la PR fusionnée garde le lien avec le ticket. Pour retravailler un ticket (PR refusée après fusion, `Tâche à corriger`), recréer une branche du même nom depuis la release à jour.
+- Une branche de ticket ne vit que jusqu'à la fusion de sa PR : GitHub supprime alors la branche distante (réglage « Automatically delete head branches » de l'API et du front), et Claude supprime la branche locale (`git branch -d`, qui refuse une branche non fusionnée), puis `git fetch --prune`. Rien n'est perdu : la fusion par commit de fusion garde les commits dans la release, et la PR fusionnée garde le lien avec le ticket. Pour retravailler un ticket (PR refusée après fusion, `Rework`), recréer une branche du même nom depuis la release à jour.
 - La recette (staging) est mise à jour automatiquement à chaque fusion dans `release/*` : le workflow `publish.yml` de l'API et du front publie l'image puis la déploie (job « Déploiement recette »). L'utilisateur valide la recette. La livraison (tag `vX.Y.Z`, production) suit automatiquement la fusion d'une release dans `main` (workflow `livraison.yml`), et la production attend l'approbation de l'utilisateur. Claude n'approuve ni ne rejette jamais un déploiement en production et ne le déclenche jamais (ni relance d'un job « Déploiement production », ni script lancé sur le serveur).
 - Accès GitHub : remotes en HTTPS, authentifiés par `gh` (`gh auth setup-git`). Pas de SSH (la clé a une passphrase).
 
@@ -74,61 +74,62 @@ Les numéros de ticket sont propres à chaque dépôt : le ticket #12 du front e
 - Un ticket créé est ajouté au projet Dramatoons, avec sa Release et son Technical label.
 - Le dépôt du ticket principal travaille avec le ticket principal. Chaque autre dépôt travaille avec son sous-ticket : branche, commits et PR portent le numéro du sous-ticket.
 - Si un champ du sous-ticket est vide (Release, Technical label…), on reprend la valeur du ticket principal.
-- Le ticket principal ne peut pas avoir un statut plus avancé que le moins avancé de ses sous-tickets. Exemple : il ne passe en `Ready for Prod` que lorsque tous ses sous-tickets y sont.
+- Le ticket principal ne peut pas avoir un statut plus avancé que le moins avancé de ses sous-tickets. Exemple : il ne passe en `Ready to Deploy` que lorsque tous ses sous-tickets y sont.
 
 ## Statuts des tickets (champ Status)
-Noms exacts : `Backlog` → `Tâche en cours` → `Merge Request` → `Ready for Release` → `Recette` → `Ready for Prod` → `Done`, avec `Tâche à corriger` en cas de recette échouée.
+Noms exacts : `Backlog` → `In Progress` → `In Review` → `In QA` → `Ready to Deploy` → `Done`, avec `Rework` en cas de recette échouée. Il n'y a pas d'état entre la fusion et la recette : chaque fusion dans la release déploie la recette.
 
 | Événement | Nouveau statut |
 | --- | --- |
-| Création du ticket | `Backlog` |
-| Création de la branche en local (début du développement) | `Tâche en cours` |
-| PR ouverte | `Merge Request` |
-| PR refusée | `Tâche en cours`, ou `Tâche à corriger` si le ticket est déjà passé par la recette |
-| PR acceptée et fusionnée dans la release | `Ready for Release`, et assigner le ticket à l'utilisateur (`remi-leconte`) |
-| Staging mis à jour avec la branche release | `Recette` |
-| Recette échouée | `Tâche à corriger`. Un retour arrière (rollback) du staging peut être nécessaire : dans GitHub, relancer **seulement** le job « Déploiement recette » (« Re-run this job ») du run « Publication » d'un commit précédent de la release, jamais « Re-run all jobs », qui reconstruirait l'image. Au-delà de 30 jours, GitHub ne relance plus le job : lancer le script de déploiement à la main sur le serveur. Seuls les commits fusionnés depuis le déploiement automatique (front#149, api#111) se redéploient ainsi ; pour un commit plus ancien, relancer l'ancienne recette, construite dans un autre dossier du serveur qui contient le code et qui y reste jusqu'au retrait de git du serveur. Si les commits annulés contiennent une migration de l'API, la défaire d'abord (section « Publication et déploiement » de `api/CLAUDE.md`). |
-| Recette réussie | `Ready for Prod` |
-| Mise en production | `Done` |
+| Création du ticket | `Backlog`, attribué à personne |
+| Création de la branche en local (début du développement) | `In Progress`, et attribuer le ticket à l'utilisateur (`remi-leconte`), qui le reste jusqu'à `Done` |
+| PR ouverte (« je valide le ticket xxx ») | `In Review` |
+| PR refusée (check rouge) | `In Progress`, ou `Rework` si le ticket est déjà passé par la recette |
+| PR fusionnée dans la release | le ticket reste en `In Review` jusqu'au déploiement de la recette |
+| Job « Déploiement recette » réussi après la fusion | `In QA` |
+| Recette échouée | `Rework`. Un retour arrière (rollback) du staging peut être nécessaire : dans GitHub, relancer **seulement** le job « Déploiement recette » (« Re-run this job ») du run « Publication » d'un commit précédent de la release, jamais « Re-run all jobs », qui reconstruirait l'image. Au-delà de 30 jours, GitHub ne relance plus le job : lancer le script de déploiement à la main sur le serveur. Seuls les commits fusionnés depuis le déploiement automatique (front#149, api#111) se redéploient ainsi ; pour un commit plus ancien, relancer l'ancienne recette, construite dans un autre dossier du serveur qui contient le code et qui y reste jusqu'au retrait de git du serveur. Si les commits annulés contiennent une migration de l'API, la défaire d'abord (section « Publication et déploiement » de `api/CLAUDE.md`). |
+| Recette réussie | `Ready to Deploy`, par l'utilisateur |
+| Mise en production réussie | `Done` |
 
-- `Tâche à corriger` se traite comme `Tâche en cours` : ce statut indique seulement que le ticket est déjà passé par la recette.
+- `In QA` et `Done` sont posés par Claude, en attendant que les workflows de l'API et du front le fassent.
+- `Rework` se traite comme `In Progress` : ce statut indique seulement que le ticket est déjà passé par la recette.
 - Un ticket n'est à traiter que si sa version est celle de la release en cours. Un ticket sans version, ou d'une autre version, ne se traite pas.
 
 ## Développement d'un ticket
 1. Vérifier que le ticket porte la version de la release en cours (champ Release) et un Technical label. Dans un dépôt autre que celui du ticket principal, travailler avec le sous-ticket de ce dépôt.
-2. Créer `<technical label>/#<id>-<description>` depuis `release/vX.Y.Z`, puis passer le ticket en `Tâche en cours`.
+2. Créer `<technical label>/#<id>-<description>` depuis `release/vX.Y.Z`, puis passer le ticket en `In Progress` et l'attribuer à `remi-leconte`.
 3. Développer et commiter sur cette branche.
-4. Ouvrir une PR de cette branche vers `release/vX.Y.Z`, puis passer le ticket en `Merge Request`.
+4. Ouvrir une PR de cette branche vers `release/vX.Y.Z`, puis passer le ticket en `In Review`.
 5. Si la PR est refusée : corriger les retours, puis ouvrir une nouvelle PR, jusqu'à ce qu'elle soit acceptée.
-6. Si la PR est acceptée : fusionner, puis passer le ticket en `Ready for Release` et l'assigner à `remi-leconte`.
+6. Si la PR est acceptée : fusionner. Le ticket passe en `In QA` dès que la recette est déployée.
 
 Avec Claude, la relecture est faite par la relecture IA de GitHub, et les étapes 5 et 6 par Claude : voir ci-dessous.
 
 ## Cycle d'un ticket avec Claude
 1. **Discussion** : l'utilisateur et Claude discutent du ticket. Claude ne crée rien et ne code rien.
-2. **Développement** : l'utilisateur valide ce qui a été dit. Claude crée le ticket (Release, Technical label), la branche, passe le ticket en `Tâche en cours`, écrit le code et ses tests (PHPUnit, Vitest) **sans commiter**, puis lance l'agent `testeur` avec le ticket et la liste des fichiers modifiés (sans lui dire quels résultats attendre). `testeur` n'écrit rien : il vérifie que chaque cas du ticket et des règles métier est couvert par un test, et lance les vérifications et les tests. Tant que le verdict est `ÉCHEC`, Claude écrit les tests manquants, corrige et relance `testeur`. Un échec dû à une règle ambiguë ou muette se fait trancher par l'utilisateur. Quand le verdict est `VALIDÉ`, Claude résume ce qu'il a fait et le résultat des tests.
+2. **Développement** : l'utilisateur valide ce qui a été dit. Claude crée le ticket (Release, Technical label), la branche, passe le ticket en `In Progress` en l'attribuant à `remi-leconte`, écrit le code et ses tests (PHPUnit, Vitest) **sans commiter**, puis lance l'agent `testeur` avec le ticket et la liste des fichiers modifiés (sans lui dire quels résultats attendre). `testeur` n'écrit rien : il vérifie que chaque cas du ticket et des règles métier est couvert par un test, et lance les vérifications et les tests. Tant que le verdict est `ÉCHEC`, Claude écrit les tests manquants, corrige et relance `testeur`. Un échec dû à une règle ambiguë ou muette se fait trancher par l'utilisateur. Quand le verdict est `VALIDÉ`, Claude résume ce qu'il a fait et le résultat des tests.
 3. **Relecture par l'utilisateur** : il pose ses questions, demande des modifications ; Claude les fait, toujours sans commiter, et relance `testeur` jusqu'au verdict `VALIDÉ` avant de rendre la main.
    - Exception : une modification qui ne touche que des commentaires ou de la documentation (`.md`, `CLAUDE.md`) ne relance pas `testeur`. Les tests automatiques et la CI suffisent ; la relecture IA relit toujours la PR.
 4. **Validation** : sur « je valide le ticket xxx », Claude :
    - commite **uniquement les fichiers liés au ticket** (ajoutés un par un, jamais `git add -A` ni `git commit -a`) ; les autres changements non commités du dépôt restent tels quels ;
-   - pousse, ouvre la PR vers `release/vX.Y.Z` (jamais de changement de cible ensuite : fermer la PR et en ouvrir une nouvelle) **en brouillon** (`gh pr create --draft`, ou réutilise la PR déjà ouverte), passe le ticket en `Merge Request` ;
+   - pousse, ouvre la PR vers `release/vX.Y.Z` (jamais de changement de cible ensuite : fermer la PR et en ouvrir une nouvelle) **en brouillon** (`gh pr create --draft`, ou réutilise la PR déjà ouverte), passe le ticket en `In Review` ;
    - si le ticket a des sous-tickets : fait de même dans chaque dépôt concerné, avec la branche et la PR de chaque sous-ticket ;
    - une fois toutes les PR du ticket ouvertes, les passe prêtes (`gh pr ready <n> -R remi-leconte/<dépôt>`) : la relecture IA ne tourne pas sur un brouillon, et chaque relecture trouve ainsi toutes les PR liées ;
    - attend la fin de tous les checks de toutes les PR (`gh pr checks <PR> --watch`), relecture IA comprise : les PR d'un même ticket sont relues ensemble, chaque relecture lisant aussi les PR liées des autres dépôts.
 5. **Résultat des checks** (pour l'instant, toute remarque de la relecture est bloquante, même de style) :
-   - **Tous verts sur toutes les PR** : Claude fusionne toutes les PR, l'API d'abord. C'est Claude, et non la fusion automatique de GitHub, qui fusionne : GitHub fusionnerait chaque PR de son côté, et une PR de l'API pourrait entrer dans la release alors que celle du front est bloquée. La fusion est tout ou rien (`gh pr merge <n> --merge`). Si une fusion échoue, il s'arrête et dit précisément ce qui est fusionné et ce qui ne l'est pas. Il passe ensuite chaque sous-ticket puis le ticket principal en `Ready for Release`, les assigne à `remi-leconte`, se place sur la release à jour, supprime les branches locales du ticket (`git branch -d`) et fait `git fetch --prune`, puis le dit à l'utilisateur : c'est fini.
-   - **Au moins un check rouge, sur n'importe laquelle des PR** : aucune PR n'est fusionnée. Claude repasse les tickets en `Tâche en cours` (ou `Tâche à corriger`), lit le commentaire de la relecture (`gh pr view <n> --comments`) ou le journal du check en échec, corrige **sans commiter**, puis explique à l'utilisateur le problème et sa correction ; retour à l'étape 3. Une question de la relecture est aussi un problème : le code est faux, ou une précision manque (fichier `.md`, `CLAUDE.md`, skill, commentaire « pourquoi ») ; Claude la corrige là où elle manque plutôt que d'y répondre.
+   - **Tous verts sur toutes les PR** : Claude fusionne toutes les PR, l'API d'abord. C'est Claude, et non la fusion automatique de GitHub, qui fusionne : GitHub fusionnerait chaque PR de son côté, et une PR de l'API pourrait entrer dans la release alors que celle du front est bloquée. La fusion est tout ou rien (`gh pr merge <n> --merge`). Si une fusion échoue, il s'arrête et dit précisément ce qui est fusionné et ce qui ne l'est pas. Il se place ensuite sur la release à jour, supprime les branches locales du ticket (`git branch -d`) et fait `git fetch --prune`. Il suit enfin le job « Déploiement recette » de chaque dépôt (run « Publication » de la fusion, `gh run watch`) : dès qu'ils ont réussi, il passe chaque sous-ticket puis le ticket principal en `In QA`, et le dit à l'utilisateur : c'est fini. Si un déploiement échoue, les tickets restent en `In Review` : il le signale.
+   - **Au moins un check rouge, sur n'importe laquelle des PR** : aucune PR n'est fusionnée. Claude repasse les tickets en `In Progress` (ou `Rework`), lit le commentaire de la relecture (`gh pr view <n> --comments`) ou le journal du check en échec, corrige **sans commiter**, puis explique à l'utilisateur le problème et sa correction ; retour à l'étape 3. Une question de la relecture est aussi un problème : le code est faux, ou une précision manque (fichier `.md`, `CLAUDE.md`, skill, commentaire « pourquoi ») ; Claude la corrige là où elle manque plutôt que d'y répondre.
    - **Après une correction poussée sur une partie seulement des PR du ticket** : relancer aussi la relecture des autres PR (`gh run rerun <run> -R remi-leconte/<dépôt>`, dernier run « Relecture » de la PR), qui ont vu l'ancienne version.
    - **Relecture en échec sans verdict** : lire l'erreur du job (`gh run view <run> --log-failed`). Quota de l'abonnement atteint ou panne : ce n'est pas une remarque, le dire à l'utilisateur et relancer le job plus tard (`gh run rerun <run> --failed`). Erreur explicite sur la PR (dossier réservé `_relecture/` ou `_workspace/` versionné) : la corriger comme une remarque.
 
 ## Mettre un ticket de côté
-Sur « mets le ticket xxx de côté » (valant validation de ce commit), Claude commite le travail en cours sur la branche du ticket, au format habituel, avec un résumé qui dit où il en est, et pousse la branche, **sans ouvrir de PR** : rien n'est déclenché (ni CI, ni relecture, ni recette). Le ticket reste en `Tâche en cours`. À la reprise, Claude fusionne la release dans la branche si elle a avancé, puis le cycle reprend à l'étape 2.
+Sur « mets le ticket xxx de côté » (valant validation de ce commit), Claude commite le travail en cours sur la branche du ticket, au format habituel, avec un résumé qui dit où il en est, et pousse la branche, **sans ouvrir de PR** : rien n'est déclenché (ni CI, ni relecture, ni recette). Le ticket reste en `In Progress`. À la reprise, Claude fusionne la release dans la branche si elle a avancé, puis le cycle reprend à l'étape 2.
 
 ## Recette et mise en production d'une release
-1. Le staging est à jour avec `release/vX.Y.Z` dès que le job « Déploiement recette » de la dernière fusion a réussi (API et front) : passer alors les tickets `Ready for Release` en `Recette`.
-2. Recetter chaque ticket : `Ready for Prod` si c'est bon, `Tâche à corriger` sinon.
+1. Le staging est à jour avec `release/vX.Y.Z` dès que le job « Déploiement recette » de la dernière fusion a réussi (API et front) : les tickets fusionnés passent alors en `In QA` (étape 5 du cycle d'un ticket).
+2. L'utilisateur recette chaque ticket : `Ready to Deploy` si c'est bon, `Rework` sinon.
 3. Quand la recette est bonne, l'utilisateur dit « je valide la recette ». C'est sa demande explicite de fusionner la release dans `main`. Claude :
-   - vérifie qu'aucun ticket de la version ne reste en `Recette` (l'utilisateur passe lui-même les tickets en `Ready for Prod` ; les extensions, hors de ce workflow, ne comptent pas) ; s'il en reste, il les signale et ne fusionne rien ;
+   - vérifie qu'aucun ticket de la version ne reste en `In QA` (l'utilisateur passe lui-même les tickets en `Ready to Deploy` ; les extensions, hors de ce workflow, ne comptent pas) ; s'il en reste, il les signale et ne fusionne rien ;
    - vérifie que la release contient déjà tout `main` (sinon, le signaler : il faut fusionner `main` dans la release et recetter), car la livraison s'arrête si `main` diffère du dernier commit recetté ;
    - ouvre la PR `release/vX.Y.Z` → `main` dans chaque dépôt concerné (API et front), attend ses checks (`gh pr checks --watch`) et la fusionne (« Create a merge commit »). Ne pas poser de tag : la livraison le pose ;
    - suit les runs « Livraison » jusqu'à ce que le job « Déploiement production » attende l'approbation, puis dit à l'utilisateur que tout est prêt pour la mise en production.
