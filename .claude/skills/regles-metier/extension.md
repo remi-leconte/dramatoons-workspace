@@ -16,7 +16,7 @@ Ces règles valent pour l'extension `dramatoons-browser-extension` (version 2.5.
    - l'interrupteur « Extension activée : » de l'onglet courant ;
    - le bouton « Rafraîchir : », seulement si l'onglet est activé (voir « liste des webtoons ») ;
    - le bouton « Déconnexion ».
-4. Si l'API ne répond pas à l'ouverture de la fenêtre, celle-ci affiche seulement « Erreur de connexion au serveur. », sans déconnecter l'utilisateur.
+4. Si l'API ne répond pas à l'ouverture de la fenêtre, celle-ci affiche « Erreur de connexion au serveur. », sans déconnecter l'utilisateur ; seul le message d'accès aux sites (« activation » 6) peut s'y ajouter.
 5. Ouvrir la fenêtre fait un seul appel à l'API, `GET /me`, qui donne le login et ce nombre (`total`, compté comme la bibliothèque) : c'est le seul appel fait en dehors d'un onglet activé.
 6. Sa présentation (cartes blanches sur fond gris clair, interrupteur et bouton « rafraîchir » verts, bouton de déconnexion rouge) reprend celle de l'extension 2.3.
 
@@ -34,7 +34,7 @@ Ces règles valent pour l'extension `dramatoons-browser-extension` (version 2.5.
 3. L'activation surligne aussitôt la page. Déconnecté, l'extension ne surligne rien.
 4. Un onglet activé le reste quand on y change de page ou qu'on recharge la page, jusqu'à ce qu'on le désactive ou qu'on le ferme. Chaque nouvelle page de l'onglet est surlignée.
 5. La désactivation retire le surlignage de la page.
-6. Si l'accès aux sites n'est pas accordé à l'extension (refusé ou retiré par l'utilisateur dans les réglages du navigateur), la fenêtre de l'extension le signale et propose de l'autoriser.
+6. Si l'accès aux sites n'est pas accordé à l'extension (refusé ou retiré par l'utilisateur dans les réglages du navigateur), la fenêtre de l'extension le signale et propose de l'autoriser. Ce message s'affiche dans tous les cas, connecté ou non, même quand l'API ne répond pas : sur certains navigateurs, retirer l'accès aux sites peut aussi bloquer l'API.
 
 ### extension - liste des webtoons
 1. Les webtoons surlignés sont ceux de la bibliothèque de l'utilisateur, sans autre filtre (règle identique à la bibliothèque, voir webtoons.md), quel que soit leur état, avec ou sans note ou chapitre lu.
