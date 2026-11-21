@@ -1,6 +1,6 @@
 # Règles métier : extension navigateur
 
-Ces règles valent pour l'extension `dramatoons-browser-extension` (version 3.0.0 et suivantes), commune à Firefox et aux navigateurs Chromium. Les anciennes extensions (`ext-ch`, `ext-ff`, version 2.x) ne sont plus modifiées. Tout ce que faisait l'extension Firefox 2.3 est repris ici, sauf ce qu'une règle change explicitement.
+Ces règles valent pour l'extension `dramatoons-browser-extension` (version 2.5.0 et suivantes), commune à Firefox et aux navigateurs Chromium. Les anciennes extensions (`ext-ch`, `ext-ff`, version 2.x) ne sont plus modifiées. Tout ce que faisait l'extension Firefox 2.3 est repris ici, sauf ce qu'une règle change explicitement.
 
 ### extension - base
 1. L'extension s'utilise sur n'importe quel site : elle surligne, dans la page affichée, les titres des webtoons de la bibliothèque de l'utilisateur, avec leur note et leur dernier chapitre lu.
