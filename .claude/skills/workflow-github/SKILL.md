@@ -52,6 +52,7 @@ Format, inspiré de la convention *Conventional Commits* :
 - Un commit = un changement cohérent. Ne pas mélanger deux sujets dans un même commit.
 - Dans le dépôt espace de travail (`dramatoons-workspace`), les commits n'ont pas de ticket : seulement `<résumé>`, avec les mêmes règles d'écriture.
 - Pas de ligne `Co-Authored-By` ni d'autre signature dans les commits.
+- Les commits portent l'identité git locale de l'utilisateur (nom `Rick-dev`), et non son compte GitHub `remi-leconte` : c'est le même auteur. Une contribution extérieure se reconnaît à l'auteur de la PR ou à une branche venue d'un fork, que le workflow de relecture contrôle, et non au nom des commits.
 
 ## Pull requests
 - Titre : `#<id> <titre du ticket>`.
