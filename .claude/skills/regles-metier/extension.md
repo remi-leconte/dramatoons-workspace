@@ -16,12 +16,13 @@ Ces règles valent pour l'extension `dramatoons-browser-extension` (version 2.5.
    - l'interrupteur « Extension activée : » de l'onglet courant ;
    - le bouton « Rafraîchir : », seulement si l'onglet est activé (voir « liste des webtoons ») ;
    - le bouton « Déconnexion ».
-4. Ouvrir la fenêtre fait un seul appel à l'API, `GET /me`, qui donne le login et ce nombre (`total`, compté comme la bibliothèque) : c'est le seul appel fait en dehors d'un onglet activé.
-5. Sa présentation (cartes blanches sur fond gris clair, interrupteur et bouton « rafraîchir » verts, bouton de déconnexion rouge) reprend celle de l'extension 2.3.
+4. Si l'API ne répond pas à l'ouverture de la fenêtre, celle-ci affiche seulement « Erreur de connexion au serveur. », sans déconnecter l'utilisateur.
+5. Ouvrir la fenêtre fait un seul appel à l'API, `GET /me`, qui donne le login et ce nombre (`total`, compté comme la bibliothèque) : c'est le seul appel fait en dehors d'un onglet activé.
+6. Sa présentation (cartes blanches sur fond gris clair, interrupteur et bouton « rafraîchir » verts, bouton de déconnexion rouge) reprend celle de l'extension 2.3.
 
 ### extension - connexion
 1. L'utilisateur se connecte avec son compte Dramatoons, avec les mêmes règles que sur le site : un compte désactivé (user.publish = 0) ne peut pas se connecter (voir utilisateurs.md).
-2. Si la connexion est refusée, la fenêtre affiche le message de l'API (par exemple « Votre compte a été désactivé. »), ou « Identifiants invalides. » si l'API n'en donne pas ; si l'API ne répond pas, « Erreur de connexion au serveur. ».
+2. Si la connexion est refusée, la fenêtre affiche le message de l'API (par exemple « Votre compte a été désactivé. »), ou « Identifiants invalides. » si l'API n'en donne pas ou donne son message anglais par défaut (« Invalid credentials. ») ; si l'API ne répond pas ou est en erreur, « Erreur de connexion au serveur. ».
 3. Après la connexion, si l'onglet courant est activé, il est surligné aussitôt.
 4. La session se prolonge comme sur le site : à l'expiration du jeton, l'extension le renouvelle seule ; si le renouvellement échoue (session expirée, compte désactivé entre-temps), l'utilisateur est déconnecté et doit se reconnecter.
 5. La session est gardée à la fermeture du navigateur : l'utilisateur reste connecté jusqu'à sa déconnexion ou l'échec du renouvellement.
