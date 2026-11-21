@@ -5,11 +5,12 @@ Site de suivi de lecture de webtoons (BD en ligne). Prod : `dramatoons.ovh`, API
 ## Composants
 - `api/` : Symfony + API Platform, MariaDB, Redis, tout en Docker. PHP n'est PAS installé sur l'hôte.
 - `front/` : Vue 3 + TypeScript, en Docker également.
-- `ext-ch/` et `ext-ff/` : extensions navigateur Chromium et Firefox (publiée sous le nom `dramatoons-highlighter`). Elles utilisent `GET /webtoons?mode=ext`.
+- `extension/` : extension navigateur commune à Firefox et aux navigateurs Chromium (`dramatoons-highlighter`, à partir de la version 3.0.0), en cours de création. Elle utilise `GET /webtoons?mode=ext`.
+- `ext-ch/` et `ext-ff/` : anciennes extensions Chromium et Firefox (jusqu'à la version 2.x), gardées telles quelles jusqu'à la publication de la nouvelle, puis supprimées.
 
-La racine est le dépôt `remi-leconte/dramatoons-workspace` : il ne contient que ce qui est commun (`CLAUDE.md`, `.claude/skills/`, `.claude/agents/`, `clone-all.sh`). Les 4 dossiers ci-dessus sont des dépôts git indépendants (`dramatoons-api`, `dramatoons-front`, `dramatoons-extension-chromium`, `dramatoons-extension-firefox`), ignorés par le dépôt racine : un changement de code se commite dans le dépôt du dossier concerné, pas à la racine. `clone-all.sh` les clone au bon endroit sur un nouveau poste. Le dépôt racine n'a qu'une branche `main`, sur laquelle on commite directement : il ne suit pas le workflow des 4 autres dépôts.
+La racine est le dépôt `remi-leconte/dramatoons-workspace` : il ne contient que ce qui est commun (`CLAUDE.md`, `.claude/skills/`, `.claude/agents/`, `clone-all.sh`). Les 5 dossiers ci-dessus sont des dépôts git indépendants (`dramatoons-api`, `dramatoons-front`, `dramatoons-browser-extension`, `dramatoons-extension-chromium`, `dramatoons-extension-firefox`), ignorés par le dépôt racine : un changement de code se commite dans le dépôt du dossier concerné, pas à la racine. `clone-all.sh` les clone au bon endroit sur un nouveau poste. Le dépôt racine n'a qu'une branche `main`, sur laquelle on commite directement : il ne suit pas le workflow des 4 autres dépôts.
 
-**Workflow git/GitHub** (branches, PR, statuts des tickets, releases, hotfix, déploiement) : charger le skill `workflow-github` avant toute action git ou GitHub dans un des 4 dépôts.
+**Workflow git/GitHub** (branches, PR, statuts des tickets, releases, hotfix, déploiement) : charger le skill `workflow-github` avant toute action git ou GitHub dans un des dépôts de code.
 
 **Cycle d'un ticket** (détail dans le skill `workflow-github`) :
 1. on discute du ticket, sans rien créer ;

@@ -3,6 +3,7 @@
 /front/
 /ext-ch/
 /ext-ff/
+/extension/
 
 # Secrets et données locales : jamais versionnés
 secrets.local.txt

@@ -16,3 +16,4 @@ clone dramatoons-api                api
 clone dramatoons-front              front
 clone dramatoons-extension-chromium ext-ch
 clone dramatoons-extension-firefox  ext-ff
+clone dramatoons-browser-extension   extension
