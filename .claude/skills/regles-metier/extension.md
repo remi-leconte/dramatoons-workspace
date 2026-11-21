@@ -23,10 +23,10 @@ Ces règles valent pour l'extension `dramatoons-browser-extension` (version 2.5.
 ### extension - connexion
 1. L'utilisateur se connecte avec son compte Dramatoons, avec les mêmes règles que sur le site : un compte désactivé (user.publish = 0) ne peut pas se connecter (voir utilisateurs.md).
 2. Si la connexion est refusée, la fenêtre affiche le message de l'API (par exemple « Votre compte a été désactivé. »), ou « Identifiants invalides. » si l'API n'en donne pas ou donne son message anglais par défaut (« Invalid credentials. ») ; si l'API ne répond pas ou est en erreur, « Erreur de connexion au serveur. ».
-3. Après la connexion, si l'onglet courant est activé, il est surligné aussitôt.
-4. La session se prolonge comme sur le site : à l'expiration du jeton, l'extension le renouvelle seule ; si le renouvellement échoue (session expirée, compte désactivé entre-temps), l'utilisateur est déconnecté et doit se reconnecter.
+3. Après la connexion, aucun onglet n'est activé (voir règles 4 et 6) : chacun s'active avec son interrupteur.
+4. La session se prolonge comme sur le site : à l'expiration du jeton, l'extension le renouvelle seule ; si le renouvellement échoue (session expirée, compte désactivé entre-temps), l'utilisateur est déconnecté comme par le bouton « Déconnexion » (règle 6) et doit se reconnecter.
 5. La session est gardée à la fermeture du navigateur : l'utilisateur reste connecté jusqu'à sa déconnexion ou l'échec du renouvellement.
-6. La déconnexion efface la session, retire le surlignage de tous les onglets activés et les désactive : après une reconnexion, aucun onglet ne surligne avant d'être réactivé.
+6. La déconnexion, demandée ou due à une session expirée, efface la session, retire le surlignage de tous les onglets activés, les désactive et oublie leur liste : après une reconnexion, avec le même compte ou un autre, aucun onglet ne surligne avant d'être réactivé, et la liste d'un utilisateur ne s'affiche jamais chez un autre.
 
 ### extension - activation
 1. L'extension s'active onglet par onglet, avec l'interrupteur de sa fenêtre. Un nouvel onglet est désactivé.
