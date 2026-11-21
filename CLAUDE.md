@@ -13,9 +13,9 @@ La racine est le dépôt `remi-leconte/dramatoons-workspace` : il ne contient qu
 **Workflow git/GitHub** (branches, PR, statuts des tickets, releases, hotfix, déploiement) : charger le skill `workflow-github` avant toute action git ou GitHub dans un des dépôts de code.
 
 **Cycle d'un ticket** (détail dans le skill `workflow-github`) :
-1. on discute du ticket, sans rien créer ;
+1. on discute du ticket, sans rien créer, en vérifiant sa taille (découpage proposé au besoin) ;
 2. l'utilisateur valide : Claude crée le ticket, écrit le code et ses tests sans commiter, fait vérifier par l'agent `testeur` que les tests couvrent le ticket et passent (corrige et relance jusqu'au verdict `VALIDÉ`), puis résume ce qu'il a fait ;
-3. l'utilisateur relit, pose ses questions, demande des modifications (toujours sans commit, avec un nouveau passage de `testeur`) ;
+3. l'utilisateur relit, pose ses questions, demande des modifications (toujours sans commit ; `testeur` n'est relancé que pour une modification importante, sinon Claude lance lui-même les tests) ;
 4. « je valide le ticket xxx » : Claude commite uniquement les fichiers liés au ticket, pousse, ouvre la PR (et celles des sous-tickets), qui sont relues dans GitHub par la relecture IA (check « Relecture IA », consignes dans `relecture/consignes.md`) ;
 5. tous les checks verts sur toutes les PR : Claude les fusionne et met à jour les tickets (fini) ; à la moindre remarque ou question sur l'une d'elles, il ne fusionne rien, corrige sans commiter, l'explique, retour à l'étape 3.
 
