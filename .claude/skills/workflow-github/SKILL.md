@@ -8,7 +8,7 @@ description: Workflow git et GitHub de Dramatoons (Release-Driven) - branches fe
 ## Ce que Claude peut faire
 - **Ne jamais commiter de lui-même**, dans aucun dépôt (y compris `dramatoons-workspace`) : après toute modification de fichier, laisser les changements non commités et attendre que l'utilisateur les ait relus et demande le commit. Pour un ticket, cette demande est « je valide le ticket xxx » (voir « Cycle d'un ticket avec Claude »).
 - Travailler uniquement sur les branches de ticket (`<technical label>/...` et `hotfix/...`) : les créer, y commiter, les pousser, ouvrir une PR.
-- Ne jamais commiter, fusionner ni pousser sur `main` ou une branche `release/*`, sauf demande explicite de l'utilisateur. Côté GitHub, un ruleset protège `main` et `release/*` (api et front) : pas de push direct, pas de force push, pas de suppression, fusion uniquement par PR (0 approbation requise).
+- Ne jamais commiter, fusionner ni pousser sur `main` ou une branche `release/*`, sauf demande explicite de l'utilisateur. Côté GitHub, un ruleset protège `main` et `release/*` (api et front) et `main` (extension) : pas de push direct, pas de force push, pas de suppression, fusion uniquement par PR (0 approbation requise).
 - Créer un ticket GitHub seulement avec l'accord explicite de l'utilisateur, y compris un ticket de correction découvert pendant un développement : proposer le ticket (titre, problème, Release, Technical label) et attendre son accord. Remplir ensuite ses champs Release et Technical label.
 - Faire avancer les statuts des tickets : `In Progress`, `In Review`, puis `In QA` une fois le ticket déployé en recette (voir « Statuts des tickets »). `Ready to Deploy` est réservé à l'utilisateur ; `Done` après une mise en production réussie (voir « Recette et mise en production d'une release »).
 - Une PR extérieure (autre auteur, fork) n'est jamais fusionnée telle quelle : son check « Relecture IA » est rouge. Si son contenu est retenu, Claude le reprend sur une branche de ticket du dépôt, et le cycle normal s'applique.
@@ -18,14 +18,14 @@ description: Workflow git et GitHub de Dramatoons (Release-Driven) - branches fe
 - Accès GitHub : remotes en HTTPS, authentifiés par `gh` (`gh auth setup-git`). Pas de SSH (la clé a une passphrase).
 
 ## Repères
-- Tableau de bord : projet GitHub **Dramatoons** (n° 4, propriétaire `remi-leconte`), commun aux 4 dépôts `dramatoons-api`, `dramatoons-front`, `dramatoons-extension-chromium` et `dramatoons-extension-firefox`.
+- Tableau de bord : projet GitHub **Dramatoons** (n° 4, propriétaire `remi-leconte`), commun aux dépôts `dramatoons-api`, `dramatoons-front` et `dramatoons-browser-extension` (et aux anciennes extensions `dramatoons-extension-chromium` et `dramatoons-extension-firefox`).
 - Version d'un ticket : champ **Release** du projet (commun aux 4 dépôts).
 - Type technique d'un ticket : champ **Technical label** du projet, une seule valeur parmi `feature`, `fix`, `refactor`, `infra`, `docs`, `tests`. Il donne le préfixe de la branche.
 - Domaine fonctionnel d'un ticket : champ **Functional labels** du projet (plusieurs valeurs possibles).
 - Les labels propres à chaque dépôt (`bug`, `enhancement`…) ne sont plus utilisés.
 - Numéro de version : `vX.Y.Z`. Une release s'appelle `vX.Y.0` (exemple : `v2.4.0`) ; un hotfix incrémente le dernier chiffre (exemple : `v2.3.1`).
 - L'API et le front ont toujours la même version `X.Y`. Si l'un des deux doit avancer sans l'autre, on saute une version pour les réaligner.
-- Les extensions ne suivent pas encore ce workflow (elles n'ont que `main`).
+- L'extension (`dramatoons-browser-extension`) suit ce workflow sans branche `release/*` : voir « Extension navigateur ». Les anciennes extensions ne sont plus modifiées.
 - Le dépôt espace de travail (`dramatoons-workspace`, la racine) ne suit pas ce workflow : il n'a qu'une branche `main`, sur laquelle on commite directement. Il ne nécessite pas de ticket : Claude peut y commiter et pousser sans ticket associé.
 - Environnements : local, staging (`api-staging.dramatoons.ovh`) et production.
 
@@ -57,7 +57,7 @@ Format, inspiré de la convention *Conventional Commits* :
 - Titre : `#<id> <titre du ticket>`.
 - Description : ce qui change, comment le tester, et le lien vers le ticket (`Refs #<id>`, ou `Refs remi-leconte/<dépôt>#<id>` si le ticket est dans un autre dépôt).
 - Cible : la branche `release/vX.Y.Z` de la version du ticket, dans le même dépôt que la branche.
-- CI (api et front) : chaque PR vers `main` ou `release/*` lance `.github/workflows/ci.yml`, qui produit les checks `Vérifications` (`composer ci` ou `npm run ci`), `Tests` (`composer test` ou `npm test`) et `Image prod`. Les rulesets les rendent obligatoires : une PR ne se fusionne qu'avec tous ses checks verts. Vers `release/*` seulement, un second ruleset (« releases : relecture IA ») exige aussi le check « Relecture IA » (`relecture.yml`). Le détail est dans la section « CI » du `CLAUDE.md` de chaque dépôt. Suivre les checks avec `gh pr checks <PR> --watch`.
+- CI (api et front) : chaque PR vers `main` ou `release/*` lance `.github/workflows/ci.yml`, qui produit les checks `Vérifications` (`composer ci` ou `npm run ci`), `Tests` (`composer test` ou `npm test`) et `Image prod`. Les rulesets les rendent obligatoires : une PR ne se fusionne qu'avec tous ses checks verts. Vers `release/*` seulement, un second ruleset (« releases : relecture IA ») exige aussi le check « Relecture IA » (`relecture.yml`). Dans l'extension, les PR vers `main` ont les checks `Vérifications`, `Tests` et « Relecture IA », tous obligatoires. Le détail est dans la section « CI » du `CLAUDE.md` de chaque dépôt. Suivre les checks avec `gh pr checks <PR> --watch`.
 
 ## Tickets et sous-tickets
 Les numéros de ticket sont propres à chaque dépôt : le ticket #12 du front et le #12 de l'API sont deux tickets différents. Chaque branche porte donc le numéro d'un ticket **du dépôt où elle est créée**.
@@ -65,10 +65,11 @@ Les numéros de ticket sont propres à chaque dépôt : le ticket #12 du front e
 | Le ticket concerne | Ticket principal dans | Sous-tickets (sub-issues) |
 | --- | --- | --- |
 | le front seulement | `dramatoons-front` | aucun |
-| le front et l'API et/ou les extensions | `dramatoons-front` | un par autre dépôt concerné (API, extension Chromium, extension Firefox), rattaché à ce dépôt |
+| le front et l'API et/ou l'extension | `dramatoons-front` | un par autre dépôt concerné (API, extension), rattaché à ce dépôt |
 | l'API seulement | `dramatoons-api` | aucun |
-| l'API et les extensions | `dramatoons-api` | un par extension concernée |
-| une extension seulement | le dépôt de l'extension | aucun |
+| l'extension, et l'API pour ses besoins | `dramatoons-browser-extension` | un dans `dramatoons-api` |
+| l'API, et l'extension pour en suivre le changement | `dramatoons-api` | un dans `dramatoons-browser-extension` |
+| l'extension seulement | `dramatoons-browser-extension` | aucun |
 
 - Un ticket est créé par défaut dans `dramatoons-front`, puis déplacé dans le bon dépôt s'il ne concerne pas le front. Quand Claude crée un ticket dont le dépôt est connu (ex. : API seulement), il le crée directement dans ce dépôt.
 - Un ticket créé est ajouté au projet Dramatoons, avec sa Release et son Technical label.
@@ -130,7 +131,7 @@ Sur « mets le ticket xxx de côté » (valant validation de ce commit), Claude 
 1. Le staging est à jour avec `release/vX.Y.Z` dès que le job « Déploiement recette » de la dernière fusion a réussi (API et front) : le job passe alors les tickets fusionnés en `In QA` (étape 5 du cycle d'un ticket).
 2. L'utilisateur recette chaque ticket : `Ready to Deploy` si c'est bon, `Rework` sinon.
 3. Quand la recette est bonne, l'utilisateur dit « je valide la recette ». C'est sa demande explicite de fusionner la release dans `main`. Claude :
-   - vérifie qu'aucun ticket de la version ne reste en `In QA` (l'utilisateur passe lui-même les tickets en `Ready to Deploy` ; les extensions, hors de ce workflow, ne comptent pas) ; s'il en reste, il les signale et ne fusionne rien ;
+   - vérifie qu'aucun ticket de la version ne reste en `In QA` (l'utilisateur passe lui-même les tickets en `Ready to Deploy` ; ceux de l'extension, publiée à part, ne comptent pas) ; s'il en reste, il les signale et ne fusionne rien ;
    - vérifie que la release contient déjà tout `main` (sinon, le signaler : il faut fusionner `main` dans la release et recetter), car la livraison s'arrête si `main` diffère du dernier commit recetté ;
    - ouvre la PR `release/vX.Y.Z` → `main` dans chaque dépôt concerné (API et front), attend ses checks (`gh pr checks --watch`) et la fusionne (« Create a merge commit »). Ne pas poser de tag : la livraison le pose ;
    - suit les runs « Livraison » jusqu'à ce que le job « Déploiement production » attende l'approbation, puis dit à l'utilisateur que tout est prêt pour la mise en production.
@@ -143,6 +144,14 @@ Sur « mets le ticket xxx de côté » (valant validation de ce commit), Claude 
 6. Après une mise en production réussie, Claude prépare la version suivante :
    - si elle n'est pas commencée : créer `release/vX.Y.0` suivante depuis `main` ;
    - si elle est déjà commencée : fusionner `main` dans sa branche `release/*`, par une PR `main` → `release/vX.Y.0` : sa relecture IA passe sans relire, ce code étant déjà relu et livré.
+
+## Extension navigateur
+L'extension (`dramatoons-browser-extension`) n'a ni recette ni déploiement automatiques : elle est publiée à la main sur les stores, par l'utilisateur.
+- **Branches et PR** : la branche de ticket part de `main`, et sa PR vise `main`. Le cycle d'un ticket est le même (brouillon, `gh pr ready`, checks, fusion par Claude avec les PR liées des autres dépôts, l'API d'abord).
+- **Version** : le champ Release d'un ticket de l'extension est la version du site avec laquelle elle sera publiée, et la version de `manifest.json` et de `package.json` est la même. Le premier ticket d'une nouvelle version la change dans les deux fichiers.
+- **Statuts**, posés à la main : `In QA` par Claude à la fusion (l'utilisateur teste alors `main`), `Ready to Deploy` par l'utilisateur, `Done` par Claude quand l'utilisateur dit l'avoir publiée sur les stores.
+- **Dépendance à l'API** : une version de l'extension qui utilise un changement de l'API ne se publie qu'après la mise en production de cette API.
+- **Publication** : sur la demande de l'utilisateur (« je publie la X.Y.Z »), Claude vérifie que la version de `manifest.json` est `X.Y.Z` et qu'aucun ticket de l'extension de cette Release n'est avant `Ready to Deploy`, puis pose le tag `vX.Y.Z` sur `main` et le pousse (`git tag vX.Y.Z origin/main && git push origin vX.Y.Z`). S'il manque quelque chose, il le signale et ne pose rien.
 
 ## Hotfix
 Un hotfix passe par une release dédiée : seule la fusion d'une `release/vX.Y.Z` dans `main` est livrée automatiquement, avec l'image recettée.

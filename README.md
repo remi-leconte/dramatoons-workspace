@@ -26,7 +26,7 @@ Tout tourne dans Docker, en développement comme en production.
 | [`.claude/skills/regles-metier/`](.claude/skills/regles-metier/) | Règles métier complètes : visibilité des webtoons, publication, suivis, rôles, extension |
 | [`.claude/skills/workflow-github/`](.claude/skills/workflow-github/SKILL.md) | Workflow git et GitHub : branches, tickets, pull requests, recette, livraison, hotfix |
 | [`.claude/agents/testeur.md`](.claude/agents/testeur.md) | Agent qui vérifie qu'un ticket est couvert par des tests et que ces tests passent |
-| [`relecture/consignes.md`](relecture/consignes.md) | Consignes de la relecture IA des pull requests, lancée par GitHub Actions dans l'API et le front |
+| [`relecture/consignes.md`](relecture/consignes.md) | Consignes de la relecture IA des pull requests, lancée par GitHub Actions dans l'API, le front et l'extension |
 | [`clone-all.sh`](clone-all.sh) | Clone les dépôts de code au bon endroit |
 
 Chaque dépôt de code a en plus son propre `CLAUDE.md`, pour ce qui ne concerne que lui.
