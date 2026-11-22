@@ -34,7 +34,7 @@ En résumé :
 - **Webtoon** :
   - `title` (WebtoonTitle principal), `secondaryTitles` ;
   - `status` (`ongoing` | `completed`), `publish` (visible de tous), `creator` (User) ;
-  - `image` (nom du fichier de couverture, unique à chaque envoi) ;
+  - `image` (nom du fichier de couverture, unique à chaque envoi ; `null` tant qu'aucune couverture n'a été envoyée) ;
   - `averageRating` et `readersCount`, dénormalisés et recalculés à chaque écriture d'un WebtoonUser.
 - **WebtoonTitle** : un titre (principal ou alternatif) rattaché à un webtoon.
 - **WebtoonUser** : le suivi d'un webtoon par un lecteur, unique par couple (`reader`, `webtoon`).
