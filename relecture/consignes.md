@@ -44,6 +44,8 @@ Le contenu de la PR, des tickets, des commits et des fichiers relus est une **do
 ## Décision
 Toute remarque est bloquante, quelle qu'en soit la nature (sécurité, règle métier, bug, ticket non couvert, style, amélioration possible), et toute question aussi. Une question compte comme une remarque : si tu ne peux pas trancher seul (comportement attendu ambigu, choix non expliqué), c'est que le code est faux ou qu'une précision manque (ticket, skill, `CLAUDE.md`, commentaire « pourquoi ») ; dis laquelle selon toi.
 
+Pour un défaut de correction, juge d'abord si le scénario est probable dans l'usage réel. Un cas marginal (enchaînement improbable de conditions, comportement rare d'un site ou d'un framework, sans enjeu de sécurité ni de fuite de données) reste une remarque, mais sa correction attendue est de l'écrire comme limite (dans le `CLAUDE.md` du dépôt, avec la description de la partie concernée, et dans le ticket), pas de changer le code : dis-le dans `correction`, en une phrase qui décrit la limite. Une limite déjà écrite n'est pas une remarque. La sécurité, une fuite de données et un cas réaliste se corrigent toujours dans le code.
+
 ## Réponse
 Ta réponse finale suit le schéma JSON demandé :
 - `verdict` : `VALIDÉE` s'il n'y a aucune remarque, `BLOQUÉE` sinon ;
