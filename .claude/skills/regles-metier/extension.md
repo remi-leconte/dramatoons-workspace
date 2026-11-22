@@ -40,6 +40,7 @@ Ces règles valent pour l'extension `dramatoons-browser-extension` (version 2.5.
 1. Les webtoons surlignés sont ceux de la bibliothèque de l'utilisateur, sans autre filtre (règle identique à la bibliothèque, voir webtoons.md), quel que soit leur état, avec ou sans note ou chapitre lu.
 2. La liste est chargée à l'activation d'un onglet et à chaque clic sur « rafraîchir », jamais à chaque page : les pages suivantes de l'onglet utilisent la liste déjà chargée.
 3. « Rafraîchir » recharge la liste (après un changement fait sur le site : nouveau suivi, note, chapitre, état, titre), retire le surlignage de la page puis la surligne de nouveau, et met à jour le nombre de webtoons de la fenêtre.
+4. La liste chargée pour un onglet est oubliée à sa désactivation, à sa fermeture et à la déconnexion (« connexion » 6) : l'extension ne la garde que pour les onglets activés.
 
 ### extension - surlignage
 1. Chaque titre d'un webtoon, principal ou secondaire, est cherché dans le texte de la page, de la même façon. Le texte des scripts et des styles n'est pas lu.
