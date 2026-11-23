@@ -41,4 +41,5 @@ En résumé :
   - `bookmark` : dernier chapitre lu, un entier ; il n'y a pas d'entité Chapitre.
   - `rate` : note.
   - `state` : `reading` (en cours), `pause`, `break` (« Pas intéressé »), `completed`.
+  - `updated` : dernière création ou modification du suivi (vide pour un suivi antérieur à ce champ), pour le tri « Modification » de la bibliothèque.
 - Rôles : `ROLE_USER` < `ROLE_MODO` < `ROLE_ADMIN` (hiérarchiques).
