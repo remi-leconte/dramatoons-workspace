@@ -29,7 +29,7 @@
 1. Seuls les administrateurs ont accès à l'administration des utilisateurs (les modérateurs n'y ont pas accès).
 2. Un administrateur peut lister, filtrer et trier les utilisateurs, et voir leurs suivis.
 3. Un administrateur peut modifier le login, l'email et le rôle d'un utilisateur (un seul rôle : utilisateur, modérateur ou administrateur). Il ne peut pas modifier son mot de passe : il peut seulement lui envoyer l'email de mot de passe oublié (règle 4).
-4. Un administrateur peut envoyer à un utilisateur l'email de mot de passe oublié ou un nouveau lien de vérification, et supprimer son compte.
+4. Un administrateur peut envoyer à un utilisateur l'email de mot de passe oublié, et supprimer son compte. Il n'envoie pas de lien de vérification : seul un changement d'email en envoie un (voir « vérification de l'email » 1), et l'utilisateur peut le redemander depuis son profil.
 5. Un administrateur peut activer ou désactiver un compte (user.publish).
 6. Le premier administrateur est créé en ligne de commande (`app:create-admin`).
 
