@@ -13,8 +13,6 @@ Ce dépôt ne contient pas de code applicatif. C'est l'espace de travail commun 
 | [dramatoons-api](https://github.com/remi-leconte/dramatoons-api) | API REST : webtoons, suivis de lecture, comptes et rôles | PHP, Symfony, API Platform, MariaDB, Redis |
 | [dramatoons-front](https://github.com/remi-leconte/dramatoons-front) | Site web | Vue 3, TypeScript, Vite |
 | [dramatoons-browser-extension](https://github.com/remi-leconte/dramatoons-browser-extension) | Extension pour Firefox et les navigateurs Chromium (en cours de création) | JavaScript |
-| [dramatoons-extension-chromium](https://github.com/remi-leconte/dramatoons-extension-chromium) | Ancienne extension Chromium, remplacée par la précédente | JavaScript |
-| [dramatoons-extension-firefox](https://github.com/remi-leconte/dramatoons-extension-firefox) | Ancienne extension Firefox, remplacée par la précédente | JavaScript |
 
 Tout tourne dans Docker, en développement comme en production.
 

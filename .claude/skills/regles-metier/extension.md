@@ -1,10 +1,10 @@
 # Règles métier : extension navigateur
 
-Ces règles valent pour l'extension `dramatoons-browser-extension` (version 2.5.0 et suivantes), commune à Firefox et aux navigateurs Chromium. Les anciennes extensions (`ext-ch`, `ext-ff`, version 2.x) ne sont plus modifiées. Tout ce que faisait l'extension Firefox 2.3 est repris ici, sauf ce qu'une règle change explicitement.
+Ces règles valent pour l'extension `dramatoons-browser-extension` (version 2.5.0 et suivantes), commune à Firefox et aux navigateurs Chromium.
 
 ### extension - base
 1. L'extension s'utilise sur n'importe quel site : elle surligne, dans la page affichée, les titres des webtoons de la bibliothèque de l'utilisateur, avec leur note et leur dernier chapitre lu.
-2. Elle fonctionne de la même façon sur Firefox et sur les navigateurs Chromium (Chrome, Edge…). Elle s'appelle « Dramatoons Highlighter » et garde ses icônes.
+2. Elle fonctionne de la même façon sur Firefox et sur les navigateurs Chromium (Chrome, Edge…). Elle s'appelle « Dramatoons Highlighter ».
 3. Elle n'utilise que l'API de Dramatoons : aucune donnée de la page visitée n'est envoyée nulle part.
 
 ### extension - fenêtre
@@ -18,7 +18,7 @@ Ces règles valent pour l'extension `dramatoons-browser-extension` (version 2.5.
    - le bouton « Déconnexion ».
 4. Si l'API ne répond pas à l'ouverture de la fenêtre, celle-ci affiche « Erreur de connexion au serveur. », sans déconnecter l'utilisateur ; seul le message d'accès aux sites (« activation » 6) peut s'y ajouter.
 5. Ouvrir la fenêtre fait un seul appel à l'API, `GET /me`, qui donne le login et ce nombre (`total`, compté comme la bibliothèque) : c'est le seul appel fait en dehors d'un onglet activé.
-6. Sa présentation (cartes blanches sur fond gris clair, interrupteur et bouton « rafraîchir » verts, bouton de déconnexion rouge) reprend celle de l'extension 2.3.
+6. Sa présentation : cartes blanches sur fond gris clair, interrupteur et bouton « rafraîchir » verts, bouton de déconnexion rouge.
 
 ### extension - connexion
 1. L'utilisateur se connecte avec son compte Dramatoons, avec les mêmes règles que sur le site : un compte désactivé (user.publish = 0) ne peut pas se connecter (voir utilisateurs.md).

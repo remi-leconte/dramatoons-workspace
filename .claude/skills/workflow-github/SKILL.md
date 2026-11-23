@@ -18,14 +18,14 @@ description: Workflow git et GitHub de Dramatoons (Release-Driven) - branches fe
 - Accès GitHub : remotes en HTTPS, authentifiés par `gh` (`gh auth setup-git`). Pas de SSH (la clé a une passphrase).
 
 ## Repères
-- Tableau de bord : projet GitHub **Dramatoons** (n° 4, propriétaire `remi-leconte`), commun aux dépôts `dramatoons-api`, `dramatoons-front` et `dramatoons-browser-extension` (et aux anciennes extensions `dramatoons-extension-chromium` et `dramatoons-extension-firefox`).
+- Tableau de bord : projet GitHub **Dramatoons** (n° 4, propriétaire `remi-leconte`), commun aux dépôts `dramatoons-api`, `dramatoons-front` et `dramatoons-browser-extension`.
 - Version d'un ticket : champ **Release** du projet (commun aux 4 dépôts).
 - Type technique d'un ticket : champ **Technical label** du projet, une seule valeur parmi `feature`, `fix`, `refactor`, `infra`, `docs`, `tests`. Il donne le préfixe de la branche.
 - Domaine fonctionnel d'un ticket : champ **Functional labels** du projet (plusieurs valeurs possibles).
 - Les labels propres à chaque dépôt (`bug`, `enhancement`…) ne sont plus utilisés.
 - Numéro de version : `vX.Y.Z`. Une release s'appelle `vX.Y.0` (exemple : `v2.4.0`) ; un hotfix incrémente le dernier chiffre (exemple : `v2.3.1`).
 - L'API et le front ont toujours la même version `X.Y`. Si l'un des deux doit avancer sans l'autre, on saute une version pour les réaligner.
-- L'extension (`dramatoons-browser-extension`) suit ce workflow sans branche `release/*` : voir « Extension navigateur ». Les anciennes extensions ne sont plus modifiées.
+- L'extension (`dramatoons-browser-extension`) suit ce workflow sans branche `release/*` : voir « Extension navigateur ».
 - Le dépôt espace de travail (`dramatoons-workspace`, la racine) ne suit pas ce workflow : il n'a qu'une branche `main`, sur laquelle on commite directement. Il ne nécessite pas de ticket : Claude peut y commiter et pousser sans ticket associé.
 - Environnements : local, staging (`api-staging.dramatoons.ovh`) et production.
 
