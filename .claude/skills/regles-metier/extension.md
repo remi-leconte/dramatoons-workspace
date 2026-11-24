@@ -4,7 +4,7 @@ Ces règles valent pour l'extension `dramatoons-browser-extension` (version 2.5.
 
 ### extension - base
 1. L'extension s'utilise sur n'importe quel site : elle surligne, dans la page affichée, les titres des webtoons de la bibliothèque de l'utilisateur, avec leur note et leur dernier chapitre lu.
-2. Elle fonctionne de la même façon sur Firefox et sur les navigateurs Chromium (Chrome, Edge…). Elle s'appelle « Dramatoons Highlighter ».
+2. Elle fonctionne de la même façon sur Firefox, Chrome et les autres navigateurs basés sur Chromium. Elle s'appelle « Dramatoons Highlighter ».
 3. Elle n'utilise que l'API de Dramatoons : aucune donnée de la page visitée n'est envoyée nulle part.
 
 ### extension - fenêtre
